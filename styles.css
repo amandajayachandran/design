@@ -344,6 +344,7 @@ img { max-width: 100%; display: block; }
   z-index: 0;
   background: var(--paper-dim);
   pointer-events: none;
+  transition: opacity 0.25s var(--ease);
 }
 
 .hero-photo {
@@ -356,6 +357,7 @@ img { max-width: 100%; display: block; }
   aspect-ratio: 4 / 5;
   background: var(--paper-dim);
   overflow: hidden;
+  transition: opacity 0.25s var(--ease);
 }
 
 .hero-photo img {
@@ -379,6 +381,7 @@ img { max-width: 100%; display: block; }
   color: var(--ink-soft);
   margin: 0;
   white-space: normal;
+  transition: opacity 0.25s var(--ease);
 }
 
 .hero-specialties {
@@ -392,6 +395,14 @@ img { max-width: 100%; display: block; }
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: 0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-backdrop,
+  .hero-photo,
+  .hero-tagline {
+    transition: none;
+  }
 }
 
 /* ==========================================================================
