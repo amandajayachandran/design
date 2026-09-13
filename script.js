@@ -37,6 +37,7 @@
   var heroBleed = document.querySelector(".hero-full-bleed");
   var heroSpecialties = document.querySelector(".hero-specialties");
   var heroSection = document.querySelector(".hero");
+  var heroBackdrop = document.querySelector(".hero-backdrop");
   var heroWords = heroMassive ? heroMassive.querySelectorAll(".hero-word") : null;
 
   // Split each word into one <span class="hero-letter"> per character,
@@ -87,6 +88,12 @@
       }
       if (heroSection) {
         heroSection.style.paddingBottom = "";
+      }
+      if (heroBackdrop) {
+        heroBackdrop.style.left = "";
+        heroBackdrop.style.top = "";
+        heroBackdrop.style.width = "";
+        heroBackdrop.style.height = "";
       }
     };
 
@@ -145,12 +152,36 @@
         heroSpecialties.style.marginLeft = marginAdjustment + "px";
       }
 
+      // Backdrop: a faint rectangle behind both the headshot and the
+      // specialty list, sized to their combined bounding box plus a
+      // fixed margin -- matching a reference layout where a flat panel
+      // sits behind both, visible only in the space neither covers.
+      if (heroBackdrop && heroSpecialties) {
+        var BACKDROP_PAD = 32;
+        var finalPhotoRect = heroPhoto.getBoundingClientRect();
+        var finalSpecialtiesRect = heroSpecialties.getBoundingClientRect();
+
+        var backdropLeft = Math.min(finalPhotoRect.left, finalSpecialtiesRect.left) - BACKDROP_PAD;
+        var backdropRight = Math.max(finalPhotoRect.right, finalSpecialtiesRect.right) + BACKDROP_PAD;
+        var backdropTop = Math.min(finalPhotoRect.top, finalSpecialtiesRect.top) - BACKDROP_PAD;
+        var backdropBottom = Math.max(finalPhotoRect.bottom, finalSpecialtiesRect.bottom) + BACKDROP_PAD;
+
+        heroBackdrop.style.left = (backdropLeft - bleedRect.left) + "px";
+        heroBackdrop.style.top = (backdropTop - bleedRect.top) + "px";
+        heroBackdrop.style.width = (backdropRight - backdropLeft) + "px";
+        heroBackdrop.style.height = (backdropBottom - backdropTop) + "px";
+      }
+
       if (heroSection) {
         heroSection.style.paddingBottom = "";
         var heroSectionRect = heroSection.getBoundingClientRect();
         var photoBottomViewport = heroPhoto.getBoundingClientRect().bottom;
+        var backdropBottomViewport = heroBackdrop
+          ? heroBackdrop.getBoundingClientRect().bottom
+          : photoBottomViewport;
+        var lowestBottomViewport = Math.max(photoBottomViewport, backdropBottomViewport);
         var clearance = 48;
-        var overflowPast = photoBottomViewport + clearance - heroSectionRect.bottom;
+        var overflowPast = lowestBottomViewport + clearance - heroSectionRect.bottom;
         if (overflowPast > 0) {
           var currentPaddingBottom = parseFloat(getComputedStyle(heroSection).paddingBottom) || 0;
           heroSection.style.paddingBottom = (currentPaddingBottom + overflowPast) + "px";
