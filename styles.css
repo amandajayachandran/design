@@ -334,6 +334,18 @@ img { max-width: 100%; display: block; }
   .hero-massive.is-sweeping .hero-letter { animation: none; }
 }
 
+/* ---- Backdrop: a faint rectangle behind the headshot and specialty
+   list, visible only where neither one covers it. Position/size set
+   entirely by script.js, computed as the bounding box of those two
+   elements with some breathing room added. ---- */
+
+.hero-backdrop {
+  position: absolute;
+  z-index: 0;
+  background: var(--paper-dim);
+  pointer-events: none;
+}
+
 .hero-photo {
   position: absolute;
   z-index: 1;
@@ -370,6 +382,8 @@ img { max-width: 100%; display: block; }
 }
 
 .hero-specialties {
+  position: relative;
+  z-index: 1;
   margin-top: var(--space-4);
   display: flex;
   flex-direction: column;
