@@ -4,10 +4,9 @@
    ========================================================================== */
 
 :root {
-  /* Aurora-inspired palette: named after the Aurora AI campaign. */
-  --void: #0E1210;        /* near-black, green undertone */
+  --void: #0E1210;
   --void-soft: #171C19;
-  --paper: #F1F3EF;       /* cool pale ground */
+  --paper: #F1F3EF;
   --paper-dim: #E7EAE3;
   --ink: #14170F;
   --ink-soft: #4A4F4B;
@@ -31,10 +30,6 @@
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-/* ==========================================================================
-   Reset + base
-   ========================================================================== */
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -118,7 +113,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* ==========================================================================
-   Section kickers — numbered labels, echo the hairline/timeline treatment
+   Section kickers
    ========================================================================== */
 
 .section-kicker.section-kicker {
@@ -261,8 +256,6 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.05em;
 }
 
-/* ---- Full-bleed headline block: breaks out of the max-width container ---- */
-
 .hero-full-bleed {
   position: relative;
   width: 100vw;
@@ -296,16 +289,16 @@ img { max-width: 100%; display: block; }
 
 .hero-massive span > * { display: inline-block; }
 
-.hero-massive[data-reveal] span {
+.hero-massive[data-reveal] .hero-word {
   transform: translateY(0);
 }
 
-.hero-massive[data-reveal].is-ready span {
+.hero-massive[data-reveal].is-ready .hero-word {
   animation: line-up 0.9s var(--ease) both;
 }
 
-.hero-massive[data-reveal].is-ready span:nth-child(1) { animation-delay: 0.05s; }
-.hero-massive[data-reveal].is-ready span:nth-child(2) { animation-delay: 0.16s; }
+.hero-massive[data-reveal].is-ready .hero-word:nth-child(1) { animation-delay: 0.05s; }
+.hero-massive[data-reveal].is-ready .hero-word:nth-child(2) { animation-delay: 0.16s; }
 
 @keyframes line-up {
   from { transform: translateY(100%); }
@@ -313,12 +306,33 @@ img { max-width: 100%; display: block; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-massive[data-reveal].is-ready span { animation: none; }
+  .hero-massive[data-reveal].is-ready .hero-word { animation: none; }
 }
 
-/* ---- Headshot: tucked behind the headline, top edge at the text baseline ----
-   Default position below is a fallback; script.js measures the actual
-   Creative/Director gap and baseline and overrides left/top precisely. */
+/* ---- Letter sweep: once the entrance settles, a green highlight
+   travels across the headline one letter at a time, starting at the
+   "C" of Creative. Each letter is a separate span (added by script.js)
+   so its color can animate independently, staggered by --i (its
+   position in reading order across both words). ---- */
+
+.hero-letter {
+  display: inline-block;
+  color: inherit;
+}
+
+.hero-massive.is-sweeping .hero-letter {
+  animation: hero-letter-sweep 0.5s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+@keyframes hero-letter-sweep {
+  0%, 100% { color: inherit; }
+  40% { color: #90BD54; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-massive.is-sweeping .hero-letter { animation: none; }
+}
 
 .hero-photo {
   position: absolute;
@@ -339,10 +353,6 @@ img { max-width: 100%; display: block; }
   display: block;
 }
 
-/* ---- Tagline: below the headline, spanning from the photo's right edge
-   to the right edge of the headline. Width/position set by script.js;
-   text-align-last stretches the words to fill that exact span. ---- */
-
 .hero-tagline {
   position: absolute;
   z-index: 1;
@@ -358,8 +368,6 @@ img { max-width: 100%; display: block; }
   margin: 0;
   white-space: normal;
 }
-
-/* ---- Specialty list ---- */
 
 .hero-specialties {
   margin-top: var(--space-4);
@@ -469,8 +477,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* ==========================================================================
-   Statement — black section; letters react to the cursor, pushing away
-   and dimming to grey, then springing back to white on release
+   Statement
    ========================================================================== */
 
 .statement {
@@ -507,12 +514,6 @@ img { max-width: 100%; display: block; }
   letter-spacing: -0.005em;
 }
 
-/* Each letter becomes its own inline-block once script.js splits the
-   line, so the cursor can push and dim individual letters. Resting
-   state is plain white with no offset; script.js sets an inline
-   transform/color only for letters currently near the pointer, and
-   clears it (letting these defaults + the transition take over) once
-   the pointer moves away. */
 .statement-line .letter {
   display: inline-block;
   color: var(--paper);
