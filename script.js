@@ -21,7 +21,6 @@
   // ---- Hero reveal: trigger the single orchestrated load-in ----
   var heroLine = document.querySelector("[data-reveal]");
   if (heroLine) {
-    // rAF ensures the browser has painted the initial state first
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         heroLine.classList.add("is-ready");
@@ -38,7 +37,41 @@
   var heroBleed = document.querySelector(".hero-full-bleed");
   var heroSpecialties = document.querySelector(".hero-specialties");
   var heroSection = document.querySelector(".hero");
-  var heroWords = heroMassive ? heroMassive.querySelectorAll("span") : null;
+  var heroWords = heroMassive ? heroMassive.querySelectorAll(".hero-word") : null;
+
+  // Split each word into one <span class="hero-letter"> per character,
+  // tagged with --i (its position across both words combined) for the
+  // staggered sweep animation. Doing this up front -- before any
+  // position measurement below -- means the E/R lookups can measure
+  // real letter elements directly instead of approximating from text.
+  var heroLetters = [];
+  if (heroWords && heroWords.length >= 2) {
+    var letterIndex = 0;
+    heroWords.forEach(function (word) {
+      var text = word.textContent;
+      word.textContent = "";
+      text.split("").forEach(function (ch) {
+        var span = document.createElement("span");
+        span.className = "hero-letter";
+        span.style.setProperty("--i", letterIndex);
+        span.textContent = ch;
+        word.appendChild(span);
+        heroLetters.push(span);
+        letterIndex++;
+      });
+    });
+  }
+
+  // Start the letter sweep once the entrance settles (0.9s duration +
+  // up to 0.16s stagger on the two words) so it reads as one
+  // continuous load sequence: words slide up, then the highlight
+  // travels across them. Runs once; skipped entirely under reduced
+  // motion, same as the site's other motion effects.
+  if (heroMassive && heroLetters.length && !prefersReducedMotion) {
+    setTimeout(function () {
+      heroMassive.classList.add("is-sweeping");
+    }, 1050);
+  }
 
   if (heroTagline && heroPhoto && heroMassive && heroBleed && heroWords && heroWords.length >= 2) {
     var MOBILE_BREAKPOINT = 860;
@@ -67,69 +100,33 @@
       var firstWordRect = heroWords[0].getBoundingClientRect();
       var secondWordRect = heroWords[1].getBoundingClientRect();
 
-      // Horizontal center of the photo: the gap between the two words
-      // (the "E" of Creative and the "D" of Director) — but never let
-      // the photo's own left edge cross left of the "E", regardless of
-      // how wide the photo renders at a given viewport size.
       var gapX = (firstWordRect.right + secondWordRect.left) / 2;
 
-      var creativeText = heroWords[0].firstChild;
-      var lastELeft = firstWordRect.right;
-      if (creativeText && creativeText.nodeType === Node.TEXT_NODE && creativeText.length > 0) {
-        var eRange = document.createRange();
-        var lastIndex = creativeText.length - 1;
-        eRange.setStart(creativeText, lastIndex);
-        eRange.setEnd(creativeText, lastIndex + 1);
-        var eRect = eRange.getBoundingClientRect();
-        if (eRect.width > 0) {
-          lastELeft = eRect.left;
-        }
-      }
+      // The letters are now real elements (split above), so the last
+      // letter of "Creative" and the first "R" of "Director" can be
+      // measured directly -- no DOM Range approximation or safety
+      // margin needed, since a real element's bounding box is exact.
+      var creativeLetters = heroWords[0].querySelectorAll(".hero-letter");
+      var lastELeft = creativeLetters.length
+        ? creativeLetters[creativeLetters.length - 1].getBoundingClientRect().left
+        : firstWordRect.right;
 
       var fontSizePx = parseFloat(getComputedStyle(heroMassive).fontSize) || 0;
 
       var photoWidth = heroPhoto.getBoundingClientRect().width;
-      // Small safety margin beyond the measured "E" edge: a DOM Range's
-      // rect reflects that character's advance box, which can sit a
-      // few pixels inside the glyph's actual visual ink depending on
-      // the font's side bearing. Padding out by a fraction of the
-      // headline's font size (rather than a fixed px value) keeps the
-      // margin proportional at any viewport width.
-      var edgeSafetyMargin = fontSizePx * 0.05;
-      var minCenterX = lastELeft + edgeSafetyMargin + photoWidth / 2;
+      var minCenterX = lastELeft + photoWidth / 2;
       var centerX = Math.max(gapX, minCenterX);
 
-      // Vertical anchor: the visual bottom of the letters. A span's
-      // bounding-box bottom includes the font's built-in descent
-      // allowance, which sits below the visible glyph for an all-caps
-      // word — so it reads lower than where the letters actually end.
-      // Pull it back up by an estimated fraction of the font size to
-      // approximate the true baseline, then a smaller amount further
-      // to land at the top of the letters' bottom stroke (not the
-      // full letter height).
       var trueBaseline = secondWordRect.bottom - fontSizePx * 0.22;
       var baselineY = trueBaseline - fontSizePx * 0.1;
 
       heroPhoto.style.left = (centerX - bleedRect.left) + "px";
       heroPhoto.style.top = (baselineY - bleedRect.top) + "px";
 
-      // Find the right edge of the first "R" in "Director" (index 2 of
-      // the text node: D-i-r-e-c-t-o-r) via a Range, since there's no
-      // per-letter element to measure directly. The R's diagonal leg
-      // extends toward the right side of its character box, so the
-      // right edge is the closest DOM-measurable approximation of
-      // where that leg meets the baseline.
-      var directorText = heroWords[1].firstChild;
-      var firstRRight = secondWordRect.left;
-      if (directorText && directorText.nodeType === Node.TEXT_NODE && directorText.length > 2) {
-        var range = document.createRange();
-        range.setStart(directorText, 2);
-        range.setEnd(directorText, 3);
-        var rRect = range.getBoundingClientRect();
-        if (rRect.width > 0) {
-          firstRRight = rRect.right;
-        }
-      }
+      var directorLetters = heroWords[1].querySelectorAll(".hero-letter");
+      var firstRRight = directorLetters.length > 2
+        ? directorLetters[2].getBoundingClientRect().right
+        : secondWordRect.left;
 
       var taglineLeft = firstRRight - bleedRect.left;
       var taglineRight = secondWordRect.right - bleedRect.left;
@@ -139,9 +136,6 @@
       heroTagline.style.width = Math.max(taglineRight - taglineLeft, 40) + "px";
       heroTagline.style.top = (headlineBottom + 12) + "px";
 
-      // Specialty list: pull its left edge (the first "/") to sit
-      // exactly 200px from the headshot's left edge, regardless of
-      // where the list naturally falls in normal flow.
       if (heroSpecialties) {
         heroSpecialties.style.marginLeft = "0px";
         var specialtiesRect = heroSpecialties.getBoundingClientRect();
@@ -151,11 +145,6 @@
         heroSpecialties.style.marginLeft = marginAdjustment + "px";
       }
 
-      // Guard: the headshot hangs below the headline via an absolute
-      // top offset, so at some viewport sizes its bottom edge can sit
-      // past the hero section's own bottom padding and visually touch
-      // the section below. Force enough clearance regardless of font
-      // metrics or screen size.
       if (heroSection) {
         heroSection.style.paddingBottom = "";
         var heroSectionRect = heroSection.getBoundingClientRect();
@@ -176,30 +165,22 @@
     }
     window.addEventListener("load", layoutHeroOverlay);
 
-    // Recalculate again once the headshot image itself has loaded —
-    // on some connections it finishes after the above have already run.
     var heroPhotoImg = heroPhoto.querySelector("img");
     if (heroPhotoImg && !heroPhotoImg.complete) {
       heroPhotoImg.addEventListener("load", layoutHeroOverlay);
     }
 
-    // Safety net: on a cold cache (first visit, no cached fonts), the
-    // custom font can finish swapping in slightly after fonts.ready
-    // and the load event both fire, leaving the overlay positioned
-    // against fallback-font metrics until a manual reload. A couple
-    // of short delayed re-checks catch that without needing one.
     setTimeout(layoutHeroOverlay, 300);
     setTimeout(layoutHeroOverlay, 1000);
   }
 
-  // ---- Statement: letters push away from the cursor and dim to grey,
-  // then spring back to white and rest once the cursor moves on. ----
+  // ---- Statement: letters push away from the cursor and dim, then
+  // spring back once the cursor moves on. ----
   var statement = document.querySelector("[data-statement]");
   var statementText = statement ? statement.querySelector(".statement-text") : null;
   var statementLines = statement ? statement.querySelectorAll("[data-line]") : null;
 
   if (statement && statementText && statementLines && statementLines.length) {
-    // Simple entrance: fade the whole block in once it scrolls into view.
     if ("IntersectionObserver" in window) {
       var revealObserver = new IntersectionObserver(
         function (entries) {
@@ -218,9 +199,6 @@
     }
 
     if (!prefersReducedMotion) {
-      // Split each line's text into one <span class="letter"> per
-      // character, preserving spaces as plain text so words still wrap
-      // naturally at narrow widths.
       statementLines.forEach(function (line) {
         var text = line.textContent;
         line.textContent = "";
@@ -237,10 +215,6 @@
       });
 
       var letters = Array.prototype.slice.call(statement.querySelectorAll(".letter"));
-      // Each letter gets a small fixed personality — a touch of extra
-      // jitter added on top of the pure push-away-from-cursor vector —
-      // so the reaction reads as organic scattering rather than a
-      // mechanically perfect radial push.
       var letterData = letters.map(function (el) {
         return {
           el: el,
@@ -321,11 +295,6 @@
         requestUpdate();
       });
 
-      // Scroll sweep: drive the same push/dim effect from scroll
-      // position too, so it fires without the person needing to move
-      // their mouse — a synthetic "cursor" travels straight down the
-      // horizontal middle of the text as the section scrolls through
-      // the viewport, inviting a pause to interact directly.
       var lastScrollY = window.scrollY;
 
       var applyScrollSweep = function () {
@@ -359,7 +328,6 @@
         { passive: true }
       );
 
-      // In case the section is already in view on load.
       applyScrollSweep();
     }
   }
