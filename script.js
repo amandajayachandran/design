@@ -28,9 +28,9 @@
     });
   }
 
-  // ---- Hero overlay: position the headshot at the Creative/Director gap
-  // (tucked behind the text baseline) and stretch the tagline between the
-  // headshot's right edge and the headline's right edge. ----
+  // ---- Hero overlay: position the headshot centered on the hero
+  // section itself, and stretch the tagline between the headshot's
+  // right edge and the headline's right edge. ----
   var heroTagline = document.querySelector(".hero-tagline");
   var heroPhoto = document.querySelector(".hero-photo");
   var heroMassive = document.querySelector(".hero-massive");
@@ -41,16 +41,14 @@
   var heroWords = heroMassive ? heroMassive.querySelectorAll(".hero-word") : null;
 
   // Single source of truth for spacing: the gap from the rectangle's
-  // left edge to the specialty list, from the specialty list's right
-  // edge to the headshot, and from the headshot's right edge to the
-  // rectangle's right edge are all this same value.
-  var GUTTER = 32;
+  // border to the specialties text, from the specialties text to the
+  // photo, and from the photo to the rectangle's border, are all the
+  // same value.
+  var HERO_GAP = 32;
 
   // Split each word into one <span class="hero-letter"> per character,
   // tagged with --i (its position across both words combined) for the
-  // staggered sweep animation. Doing this up front -- before any
-  // position measurement below -- means the E/R lookups can measure
-  // real letter elements directly instead of approximating from text.
+  // staggered sweep animation.
   var heroLetters = [];
   if (heroWords && heroWords.length >= 2) {
     var letterIndex = 0;
@@ -71,9 +69,7 @@
 
   // Start the letter sweep once the entrance settles (0.9s duration +
   // up to 0.16s stagger on the two words) so it reads as one
-  // continuous load sequence: words slide up, then the highlight
-  // travels across them. Runs once; skipped entirely under reduced
-  // motion, same as the site's other motion effects.
+  // continuous load sequence. Runs once; skipped under reduced motion.
   if (heroMassive && heroLetters.length && !prefersReducedMotion) {
     setTimeout(function () {
       heroMassive.classList.add("is-sweeping");
@@ -83,12 +79,8 @@
   if (heroTagline && heroPhoto && heroMassive && heroBleed && heroWords && heroWords.length >= 2) {
     var MOBILE_BREAKPOINT = 860;
 
-    // Hidden until the authoritative layout pass completes, so the
-    // photo/tagline/backdrop never visibly snap or jump into place --
-    // whether that's from the webfont swapping in or from the
-    // headline's slide-up animation still being in motion (its
-    // transform briefly affects getBoundingClientRect on the words,
-    // which would otherwise throw off the one-time measurement).
+    // Hidden until the first real layout pass completes, so nothing
+    // ever visibly snaps into position after the webfont swaps in.
     var hideOverlayUntilPositioned = function () {
       if (window.innerWidth <= MOBILE_BREAKPOINT) return;
       heroPhoto.style.opacity = "0";
@@ -130,29 +122,16 @@
       }
 
       var bleedRect = heroBleed.getBoundingClientRect();
-      var firstWordRect = heroWords[0].getBoundingClientRect();
       var secondWordRect = heroWords[1].getBoundingClientRect();
-
-      // The letters are real elements (split above), so the last
-      // letter of "Creative" can be measured directly -- used only as
-      // a floor, to keep the photo from overlapping the headline.
-      var creativeLetters = heroWords[0].querySelectorAll(".hero-letter");
-      var lastELeft = creativeLetters.length
-        ? creativeLetters[creativeLetters.length - 1].getBoundingClientRect().left
-        : firstWordRect.right;
-
       var fontSizePx = parseFloat(getComputedStyle(heroMassive).fontSize) || 0;
-      var photoWidth = heroPhoto.getBoundingClientRect().width;
 
-      // The headshot's default horizontal position is the center of
-      // the page itself (the full-bleed section spans the viewport),
-      // not the gap between the two headline words -- so it stays put
-      // at the same spot regardless of viewport width or how the
-      // words happen to kern. It only shifts right of that if the
-      // headline is wide enough to otherwise sit under "Creative".
-      var pageCenterX = bleedRect.left + bleedRect.width / 2;
-      var minCenterX = lastELeft + photoWidth / 2;
-      var centerX = Math.max(pageCenterX, minCenterX);
+      // Center the headshot on the hero section's own box, not on the
+      // gap between the two headline words -- that gap only lines up
+      // with true center when both words happen to render the exact
+      // same width, which isn't guaranteed and isn't stable across
+      // font-load timing. This anchor is fixed for a given viewport
+      // width, so the result is identical on every reload.
+      var centerX = (bleedRect.left + bleedRect.right) / 2;
 
       var trueBaseline = secondWordRect.bottom - fontSizePx * 0.22;
       var baselineY = trueBaseline - fontSizePx * 0.1;
@@ -173,31 +152,32 @@
       heroTagline.style.width = Math.max(taglineRight - taglineLeft, 40) + "px";
       heroTagline.style.top = (headlineBottom + 12) + "px";
 
-      // Pin the specialty list's right edge exactly GUTTER px away
-      // from the headshot's left edge -- the same distance used for
-      // the rectangle's own padding below, so all three gaps
-      // (rectangle-to-list, list-to-photo, photo-to-rectangle) match.
       if (heroSpecialties) {
+        // Position the specialties block so its right edge -- the end
+        // of its widest line, the "n" in "Creation" -- sits exactly
+        // HERO_GAP px left of the photo. Same constant as the
+        // rectangle's own padding, so the two gaps match.
         heroSpecialties.style.marginLeft = "0px";
         var specialtiesRect = heroSpecialties.getBoundingClientRect();
         var photoLeftViewport = heroPhoto.getBoundingClientRect().left;
-        var desiredRightViewport = photoLeftViewport - GUTTER;
+        var desiredRightViewport = photoLeftViewport - HERO_GAP;
         var marginAdjustment = desiredRightViewport - specialtiesRect.right;
         heroSpecialties.style.marginLeft = marginAdjustment + "px";
       }
 
       // Backdrop: a faint rectangle behind both the headshot and the
-      // specialty list, padded by the same GUTTER on every side so the
-      // rectangle-to-content spacing matches the list-to-photo and
-      // photo-to-rectangle spacing exactly.
+      // specialty list, padded by HERO_GAP on every side -- the same
+      // value used for the specialties-to-photo gap above, so the
+      // border-to-text, text-to-photo, and photo-to-border gaps all
+      // read as identical.
       if (heroBackdrop && heroSpecialties) {
         var finalPhotoRect = heroPhoto.getBoundingClientRect();
         var finalSpecialtiesRect = heroSpecialties.getBoundingClientRect();
 
-        var backdropLeft = Math.min(finalPhotoRect.left, finalSpecialtiesRect.left) - GUTTER;
-        var backdropRight = Math.max(finalPhotoRect.right, finalSpecialtiesRect.right) + GUTTER;
-        var backdropTop = Math.min(finalPhotoRect.top, finalSpecialtiesRect.top) - GUTTER;
-        var backdropBottom = Math.max(finalPhotoRect.bottom, finalSpecialtiesRect.bottom) + GUTTER;
+        var backdropLeft = Math.min(finalPhotoRect.left, finalSpecialtiesRect.left) - HERO_GAP;
+        var backdropRight = Math.max(finalPhotoRect.right, finalSpecialtiesRect.right) + HERO_GAP;
+        var backdropTop = Math.min(finalPhotoRect.top, finalSpecialtiesRect.top) - HERO_GAP;
+        var backdropBottom = Math.max(finalPhotoRect.bottom, finalSpecialtiesRect.bottom) + HERO_GAP;
 
         heroBackdrop.style.left = (backdropLeft - bleedRect.left) + "px";
         heroBackdrop.style.top = (backdropTop - bleedRect.top) + "px";
@@ -220,66 +200,31 @@
           heroSection.style.paddingBottom = (currentPaddingBottom + overflowPast) + "px";
         }
       }
+
+      revealOverlay();
     };
 
-    // Keep the overlay invisible until the authoritative pass below
-    // has actually run, so nothing has to jump after the fact.
+    // Keep the overlay invisible until we've measured against the real
+    // webfont at least once, so nothing has to jump after the fact.
     hideOverlayUntilPositioned();
 
-    // First pass: establishes a reasonable layout immediately in case
-    // fonts are already cached, but stays hidden regardless.
+    // First pass: run immediately in case fonts are already cached/loaded.
     layoutHeroOverlay();
 
-    // The authoritative pass waits for two things that can each change
-    // the measurements above: the webfont actually swapping in, and
-    // the headline's slide-up animation finishing (its transform
-    // affects getBoundingClientRect while it's still running, which is
-    // what previously made the photo/rectangle land in a slightly
-    // different spot on every reload). Only once both are settled do
-    // we measure for real and reveal the overlay.
-    var fontsSettled = (document.fonts && document.fonts.ready)
-      ? document.fonts.ready
-      : Promise.resolve();
-
-    var revealSettled = new Promise(function (resolve) {
-      if (prefersReducedMotion || !heroWords.length) {
-        resolve();
-        return;
-      }
-      var remaining = heroWords.length;
-      var onAnimEnd = function (event) {
-        if (event.animationName !== "line-up") return;
-        remaining--;
-        if (remaining <= 0) {
-          heroWords.forEach(function (w) {
-            w.removeEventListener("animationend", onAnimEnd);
-          });
-          resolve();
-        }
-      };
-      heroWords.forEach(function (w) {
-        w.addEventListener("animationend", onAnimEnd);
-      });
-      // Safety net in case an animationend event is ever missed.
-      setTimeout(resolve, 1300);
-    });
-
-    Promise.all([fontsSettled, revealSettled]).then(function () {
-      layoutHeroOverlay();
-      revealOverlay();
-    });
-
-    // A live viewport resize is a deliberate, ongoing UX case (not an
-    // initial-load timing race), so it recomputes directly.
-    var resizeTicking = false;
-    window.addEventListener("resize", function () {
-      if (resizeTicking) return;
-      resizeTicking = true;
-      requestAnimationFrame(function () {
-        resizeTicking = false;
+    // Re-run once the real webfont has swapped in -- this affects the
+    // vertical baseline measurement (font metrics), not the horizontal
+    // centering, which is now anchored to the container and doesn't
+    // depend on fonts at all.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        hideOverlayUntilPositioned();
         layoutHeroOverlay();
       });
-    });
+    } else {
+      revealOverlay();
+    }
+
+    window.addEventListener("resize", layoutHeroOverlay);
   }
 
   // ---- Statement: letters push away from the cursor and dim, then
