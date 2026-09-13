@@ -76,6 +76,24 @@
 
   if (heroTagline && heroPhoto && heroMassive && heroBleed && heroWords && heroWords.length >= 2) {
     var MOBILE_BREAKPOINT = 860;
+    var overlayReady = false;
+
+    // Hidden until the first real layout pass completes, so the
+    // photo/tagline/backdrop never visibly snap into position after
+    // the webfont swaps in. Skipped on mobile, where these elements
+    // use static positioning instead (see clearOverlayStyles).
+    var hideOverlayUntilPositioned = function () {
+      if (window.innerWidth <= MOBILE_BREAKPOINT) return;
+      heroPhoto.style.opacity = "0";
+      heroTagline.style.opacity = "0";
+      if (heroBackdrop) heroBackdrop.style.opacity = "0";
+    };
+
+    var revealOverlay = function () {
+      heroPhoto.style.opacity = "";
+      heroTagline.style.opacity = "";
+      if (heroBackdrop) heroBackdrop.style.opacity = "";
+    };
 
     var clearOverlayStyles = function () {
       heroPhoto.style.left = "";
@@ -95,6 +113,7 @@
         heroBackdrop.style.width = "";
         heroBackdrop.style.height = "";
       }
+      revealOverlay();
     };
 
     var layoutHeroOverlay = function () {
@@ -187,22 +206,37 @@
           heroSection.style.paddingBottom = (currentPaddingBottom + overflowPast) + "px";
         }
       }
+
+      revealOverlay();
+      overlayReady = true;
     };
 
+    // Keep the overlay invisible until we've measured against the real
+    // webfont at least once, so nothing has to jump after the fact.
+    hideOverlayUntilPositioned();
+
+    // First pass: run immediately in case fonts are already cached/loaded.
     layoutHeroOverlay();
-    window.addEventListener("resize", layoutHeroOverlay);
+
+    // Re-run once the real webfont has actually swapped in -- this is
+    // the only recompute that matters, since image size is fixed by
+    // CSS (aspect-ratio) rather than measured. A single re-run here
+    // replaces the previous window.load / 300ms / 1000ms fallbacks,
+    // which only added redundant reflows and collided with the
+    // 1.05s letter-sweep animation start.
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(layoutHeroOverlay);
+      document.fonts.ready.then(function () {
+        overlayReady = false;
+        hideOverlayUntilPositioned();
+        layoutHeroOverlay();
+      });
+    } else {
+      // No Font Loading API support: nothing better to wait on, so
+      // just make sure the overlay is visible after the first pass.
+      revealOverlay();
     }
-    window.addEventListener("load", layoutHeroOverlay);
 
-    var heroPhotoImg = heroPhoto.querySelector("img");
-    if (heroPhotoImg && !heroPhotoImg.complete) {
-      heroPhotoImg.addEventListener("load", layoutHeroOverlay);
-    }
-
-    setTimeout(layoutHeroOverlay, 300);
-    setTimeout(layoutHeroOverlay, 1000);
+    window.addEventListener("resize", layoutHeroOverlay);
   }
 
   // ---- Statement: letters push away from the cursor and dim, then
