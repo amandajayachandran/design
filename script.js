@@ -8,6 +8,29 @@
     "(prefers-reduced-motion: reduce)"
   ).matches;
 
+  // ---- Resume modal ----
+  var resumeTrigger = document.getElementById("resume-trigger");
+  var resumeModal = document.getElementById("resume-modal");
+  var resumeOverlay = document.getElementById("resume-modal-overlay");
+  var resumeClose = document.getElementById("resume-modal-close");
+  if (resumeTrigger && resumeModal) {
+    var openResume = function (e) {
+      e.preventDefault();
+      resumeModal.classList.add("is-open");
+      resumeModal.setAttribute("aria-hidden", "false");
+    };
+    var closeResume = function () {
+      resumeModal.classList.remove("is-open");
+      resumeModal.setAttribute("aria-hidden", "true");
+    };
+    resumeTrigger.addEventListener("click", openResume);
+    resumeOverlay.addEventListener("click", closeResume);
+    resumeClose.addEventListener("click", closeResume);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeResume();
+    });
+  }
+
   // ---- Header: solid background once the page has scrolled ----
   var header = document.querySelector("[data-header]");
   if (header) {
