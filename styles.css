@@ -207,13 +207,19 @@ img { max-width: 100%; display: block; }
   right: 0;
 }
 
+.about-heading-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .nav-resume {
   display: inline-block;
-  margin-bottom: var(--space-3);
   border: 1px solid #90BD54;
   border-radius: var(--radius);
   padding: 0.4rem 0.9rem;
   color: var(--ink);
+  font-size: 0.9rem;
 }
 
 .resume-modal {
