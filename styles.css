@@ -1,500 +1,929 @@
-// Amanda Jayachandran — design skeleton
-// Small, deliberate interactions only. No framework required.
+/* ==========================================================================
+   Amanda Jayachandran — design skeleton
+   Design tokens
+   ========================================================================== */
 
-(function () {
-  "use strict";
+:root {
+  --void: #0E1210;
+  --void-soft: #171C19;
+  --paper: #F1F3EF;
+  --paper-dim: #E7EAE3;
+  --ink: #14170F;
+  --ink-soft: #4A4F4B;
+  --line: #D8DCD5;
+  --line-on-void: #2B322D;
 
-  var prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-display-bold: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --font-wordmark: var(--font-body);
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  // ---- Header: solid background once the page has scrolled ----
-  var header = document.querySelector("[data-header]");
-  if (header) {
-    var onScroll = function () {
-      header.classList.toggle("is-scrolled", window.scrollY > 8);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.75rem;
+  --space-4: 3rem;
+  --space-5: 5rem;
+  --space-6: 8rem;
+
+  --max-width: 74rem;
+  --radius: 2px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
+}
 
-  // ---- Mobile nav: hamburger toggle opens/closes the dropdown,
-  // closes on link click or on resizing past the mobile breakpoint ----
-  var navToggle = document.querySelector(".nav-toggle");
-  var primaryNav = document.querySelector(".nav");
-  if (navToggle && primaryNav) {
-    var closeNav = function () {
-      primaryNav.classList.remove("is-open");
-      navToggle.setAttribute("aria-expanded", "false");
-    };
-    var toggleNav = function () {
-      var isOpen = primaryNav.classList.toggle("is-open");
-      navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    };
-    navToggle.addEventListener("click", toggleNav);
-    primaryNav.querySelectorAll("a").forEach(function (link) {
-      link.addEventListener("click", closeNav);
-    });
-    window.addEventListener("resize", function () {
-      if (window.innerWidth > 860) closeNav();
-    });
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, blockquote, p, ul, ol {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+  padding: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+img { max-width: 100%; display: block; }
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--void);
+  color: var(--paper);
+  padding: var(--space-1) var(--space-2);
+  z-index: 100;
+}
+.skip-link:focus {
+  left: var(--space-2);
+  top: var(--space-2);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   Section kickers
+   ========================================================================== */
+
+.section-kicker.section-kicker {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-1);
+  color: #90BD54;
+}
+
+.section-kicker--void.section-kicker--void {
+  color: #90BD54;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  transition: background-color 0.3s var(--ease), backdrop-filter 0.3s var(--ease);
+}
+
+.site-header.is-scrolled {
+  background-color: rgba(241, 243, 239, 0.82);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.mark-logo-link {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  grid-column: 1;
+  justify-self: start;
+}
+
+.mark-logo {
+  height: clamp(1.28rem, 2.4vw, 1.68rem);
+  width: auto;
+}
+
+.mark-text {
+  grid-column: 2;
+  justify-self: center;
+  font-family: var(--font-wordmark);
+  font-size: clamp(0.8rem, 1.44vw, 1.04rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.nav {
+  grid-column: 3;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.9rem;
+}
+
+.nav a {
+  position: relative;
+  padding: 0.2rem 0;
+}
+
+.nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -2px;
+  height: 1px;
+  background: var(--ink);
+  transition: right 0.25s var(--ease);
+}
+
+.nav a:hover::after,
+.nav a:focus-visible::after {
+  right: 0;
+}
+
+.nav-cta {
+  font-weight: 600;
+}
+
+.nav-toggle {
+  display: none;
+  grid-column: 3;
+  justify-self: end;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--ink);
+  transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem var(--space-3) var(--space-4);
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.5rem;
+}
+
+.hero-stat-number {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: var(--space-3);
+}
+
+.hero-stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hero-full-bleed {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding: 0 var(--space-3) var(--space-5);
+  box-sizing: border-box;
+}
+
+.hero-massive {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display-bold);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: clamp(3.5rem, 13.5vw, 12rem);
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.35em;
+}
+
+.hero-massive span {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.hero-massive span > * { display: inline-block; }
+
+.hero-massive[data-reveal] .hero-word {
+  transform: translateY(0);
+}
+
+.hero-massive[data-reveal].is-ready .hero-word {
+  animation: line-up 0.9s var(--ease) both;
+}
+
+.hero-massive[data-reveal].is-ready .hero-word:nth-child(1) { animation-delay: 0.05s; }
+.hero-massive[data-reveal].is-ready .hero-word:nth-child(2) { animation-delay: 0.16s; }
+
+@keyframes line-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-massive[data-reveal].is-ready .hero-word { animation: none; }
+}
+
+/* ---- Letter sweep: once the entrance settles, a green highlight
+   travels across the headline one letter at a time, starting at the
+   "C" of Creative -- then bounces back the other way, and keeps
+   alternating direction indefinitely. Each letter is a separate span
+   (added by script.js) so its color can animate independently,
+   staggered by --i, which script.js reassigns (reversed) before each
+   pass to flip the direction. ---- */
+
+.hero-letter {
+  display: inline-block;
+  color: inherit;
+  transition: color 0.3s var(--ease);
+}
+
+.hero-massive.is-sweeping .hero-letter {
+  animation: hero-letter-sweep 0.8s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+@keyframes hero-letter-sweep {
+  0%, 100% { color: inherit; }
+  40% { color: #90BD54; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-massive.is-sweeping .hero-letter { animation: none; }
+}
+
+/* ---- Backdrop: a faint rectangle behind the headshot and specialty
+   list, visible only where neither one covers it. Position/size set
+   entirely by script.js, computed as the bounding box of those two
+   elements with some breathing room added. ---- */
+
+.hero-backdrop {
+  position: absolute;
+  z-index: 0;
+  background: var(--paper-dim);
+  pointer-events: none;
+  transition: opacity 0.25s var(--ease);
+}
+
+.hero-photo {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, 0);
+  width: clamp(11.7rem, 20.8vw, 16.9rem);
+  aspect-ratio: 4 / 5;
+  background: var(--paper-dim);
+  overflow: hidden;
+  transition: opacity 0.25s var(--ease);
+}
+
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-tagline {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: justify;
+  text-align-last: justify;
+  color: var(--ink-soft);
+  margin: 0;
+  white-space: normal;
+  transition: opacity 0.25s var(--ease);
+}
+
+.hero-specialties {
+  position: relative;
+  z-index: 1;
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: max-content;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  transition: opacity 0.25s var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-backdrop,
+  .hero-photo,
+  .hero-tagline,
+  .hero-specialties {
+    transition: none;
   }
+}
 
-  // ---- Hero reveal: trigger the single orchestrated load-in ----
-  var heroLine = document.querySelector("[data-reveal]");
-  if (heroLine) {
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        heroLine.classList.add("is-ready");
-      });
-    });
+/* ==========================================================================
+   Advisory focus
+   ========================================================================== */
+
+.focus {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-5) var(--space-3);
+  background: var(--void);
+  color: var(--paper);
+}
+
+.focus-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.section-head {
+  max-width: 34ch;
+  margin-bottom: var(--space-3);
+}
+
+.section-head h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 450;
+}
+
+.section-head p {
+  margin-top: var(--space-1);
+  color: rgba(241, 243, 239, 0.7);
+}
+
+.focus-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--line-on-void);
+  margin: 0;
+}
+
+.focus-item {
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  border-bottom: 1px solid var(--line-on-void);
+}
+
+.focus-item:nth-child(odd) {
+  border-right: 1px solid var(--line-on-void);
+  padding-right: var(--space-4);
+}
+
+.focus-item:nth-child(even) {
+  padding-left: var(--space-4);
+}
+
+.focus-item dt {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 450;
+  margin-bottom: 0.4rem;
+}
+
+.focus-item dd {
+  margin: 0;
+  color: rgba(241, 243, 239, 0.7);
+  max-width: 34ch;
+}
+
+.mywork-note {
+  margin-top: var(--space-3);
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.mywork-note p {
+  max-width: 46ch;
+  color: rgba(241, 243, 239, 0.7);
+}
+
+.mywork-note-cta {
+  flex-shrink: 0;
+  border: 1px solid #90BD54;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.1rem;
+  font-size: 0.9rem;
+  transition: background-color 0.2s var(--ease);
+}
+
+.mywork-note-cta:hover,
+.mywork-note-cta:focus-visible {
+  background: #90BD54;
+}
+
+/* ==========================================================================
+   Statement
+   ========================================================================== */
+
+.statement {
+  position: relative;
+  z-index: 1;
+  background: var(--void);
+  color: var(--paper);
+  padding: var(--space-6) var(--space-3);
+  overflow: hidden;
+}
+
+.statement-text {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  opacity: 0;
+  transition: opacity 1s var(--ease);
+}
+
+.statement-text.is-visible {
+  opacity: 1;
+}
+
+.statement-visual {
+  display: block;
+}
+
+.statement-line {
+  display: block;
+  font-family: var(--font-display-bold);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: clamp(1.8rem, 5.2vw, 4.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.005em;
+}
+
+/* Each word is wrapped in its own nowrap span (added by script.js)
+   before being split into per-letter spans -- this keeps a word from
+   breaking across lines when it doesn't fit, since the letters alone
+   have no inherent "stay together" behavior once split. Normal
+   wrapping still happens at the actual space between words. */
+.statement-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.statement-line .letter {
+  display: inline-block;
+  color: var(--paper);
+  transform: translate(0, 0) rotate(0deg);
+  transition: transform 0.4s var(--ease), color 0.4s var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statement-text {
+    opacity: 1;
+    transition: none;
   }
-
-  // ---- Hero overlay: position the headshot centered on the hero
-  // section itself, and stretch the tagline between the headshot's
-  // right edge and the headline's right edge. ----
-  var heroTagline = document.querySelector(".hero-tagline");
-  var heroPhoto = document.querySelector(".hero-photo");
-  var heroMassive = document.querySelector(".hero-massive");
-  var heroBleed = document.querySelector(".hero-full-bleed");
-  var heroSpecialties = document.querySelector(".hero-specialties");
-  var heroSection = document.querySelector(".hero");
-  var heroBackdrop = document.querySelector(".hero-backdrop");
-  var heroWords = heroMassive ? heroMassive.querySelectorAll(".hero-word") : null;
-
-  // Single source of truth for spacing: the gap from the rectangle's
-  // border to the specialties text, from the specialties text to the
-  // photo, and from the photo to the rectangle's border, are all the
-  // same value.
-  var HERO_GAP = 32;
-
-  // Split each word into one <span class="hero-letter"> per character,
-  // tagged with --i (its position across both words combined) for the
-  // staggered sweep animation.
-  var heroLetters = [];
-  if (heroWords && heroWords.length >= 2) {
-    var letterIndex = 0;
-    heroWords.forEach(function (word) {
-      var text = word.textContent;
-      word.textContent = "";
-      text.split("").forEach(function (ch) {
-        var span = document.createElement("span");
-        span.className = "hero-letter";
-        span.style.setProperty("--i", letterIndex);
-        span.textContent = ch;
-        word.appendChild(span);
-        heroLetters.push(span);
-        letterIndex++;
-      });
-    });
+  .statement-line .letter {
+    transition: none;
   }
+}
 
-  // Start the letter sweep once the entrance settles (0.9s duration +
-  // up to 0.16s stagger on the two words) so it reads as one
-  // continuous load sequence, then keep bouncing it back and forth
-  // (left-to-right, then right-to-left, forever) by re-triggering the
-  // same animation with the letter order reversed each time. This is
-  // deliberately simple -- no animationend detection, no visibility
-  // observer -- just a fixed, known timing loop, since the earlier
-  // event-based approach proved unreliable in at least one real
-  // browser even though it worked correctly in testing here.
-  if (heroMassive && heroLetters.length && !prefersReducedMotion) {
-    var SWEEP_STAGGER_MS = 90;
-    var SWEEP_DURATION_MS = 800;
-    var SWEEP_PASS_GAP_MS = 300;
-    var sweepPassLength =
-      (heroLetters.length - 1) * SWEEP_STAGGER_MS + SWEEP_DURATION_MS;
-
-    var sweepForward = true;
-
-    var triggerSweepPass = function () {
-      heroLetters.forEach(function (letter, idx) {
-        var effectiveIndex = sweepForward ? idx : (heroLetters.length - 1 - idx);
-        letter.style.setProperty("--i", effectiveIndex);
-      });
-
-      // Force the animation to restart from the beginning with the
-      // new --i values: removing the class, forcing the browser to
-      // register that removal (reading a layout property forces this),
-      // then re-adding it.
-      heroMassive.classList.remove("is-sweeping");
-      void heroMassive.offsetWidth;
-      heroMassive.classList.add("is-sweeping");
-
-      sweepForward = !sweepForward;
-      setTimeout(triggerSweepPass, sweepPassLength + SWEEP_PASS_GAP_MS);
-    };
-
-    setTimeout(triggerSweepPass, 1050);
+@media (prefers-reduced-motion: reduce) {
+  .statement-line .letter {
+    transition: none;
   }
-
-  if (heroTagline && heroPhoto && heroMassive && heroBleed && heroWords && heroWords.length >= 2) {
-    var MOBILE_BREAKPOINT = 860;
-
-    // Hidden until the first real layout pass completes, so nothing
-    // ever visibly snaps into position after the webfont swaps in.
-    var hideOverlayUntilPositioned = function () {
-      if (window.innerWidth <= MOBILE_BREAKPOINT) return;
-      heroPhoto.style.opacity = "0";
-      heroTagline.style.opacity = "0";
-      if (heroBackdrop) heroBackdrop.style.opacity = "0";
-      if (heroSpecialties) heroSpecialties.style.opacity = "0";
-    };
-
-    var revealOverlay = function () {
-      heroPhoto.style.opacity = "";
-      heroTagline.style.opacity = "";
-      if (heroBackdrop) heroBackdrop.style.opacity = "";
-      if (heroSpecialties) heroSpecialties.style.opacity = "";
-    };
-
-    var clearOverlayStyles = function () {
-      heroPhoto.style.left = "";
-      heroPhoto.style.top = "";
-      heroTagline.style.left = "";
-      heroTagline.style.top = "";
-      heroTagline.style.width = "";
-      if (heroSpecialties) {
-        heroSpecialties.style.marginLeft = "";
-      }
-      if (heroSection) {
-        heroSection.style.paddingBottom = "";
-      }
-      if (heroBackdrop) {
-        heroBackdrop.style.left = "";
-        heroBackdrop.style.top = "";
-        heroBackdrop.style.width = "";
-        heroBackdrop.style.height = "";
-      }
-      revealOverlay();
-    };
-
-    var layoutHeroOverlay = function () {
-      if (window.innerWidth <= MOBILE_BREAKPOINT) {
-        clearOverlayStyles();
-        return;
-      }
-
-      var bleedRect = heroBleed.getBoundingClientRect();
-      var secondWordRect = heroWords[1].getBoundingClientRect();
-      var fontSizePx = parseFloat(getComputedStyle(heroMassive).fontSize) || 0;
-
-      // Center the headshot on the hero section's own box, not on the
-      // gap between the two headline words -- that gap only lines up
-      // with true center when both words happen to render the exact
-      // same width, which isn't guaranteed and isn't stable across
-      // font-load timing. This anchor is fixed for a given viewport
-      // width, so the result is identical on every reload.
-      var centerX = (bleedRect.left + bleedRect.right) / 2;
-
-      var trueBaseline = secondWordRect.bottom - fontSizePx * 0.22;
-      var baselineY = trueBaseline - fontSizePx * 0.1;
-
-      heroPhoto.style.left = (centerX - bleedRect.left) + "px";
-      heroPhoto.style.top = (baselineY - bleedRect.top) + "px";
-
-      var directorLetters = heroWords[1].querySelectorAll(".hero-letter");
-      var firstRRight = directorLetters.length > 2
-        ? directorLetters[2].getBoundingClientRect().right
-        : secondWordRect.left;
-
-      var taglineLeft = firstRRight - bleedRect.left;
-      var taglineRight = secondWordRect.right - bleedRect.left;
-      var headlineBottom = heroMassive.getBoundingClientRect().bottom - bleedRect.top;
-
-      heroTagline.style.left = taglineLeft + "px";
-      heroTagline.style.width = Math.max(taglineRight - taglineLeft, 40) + "px";
-      heroTagline.style.top = (headlineBottom + 12) + "px";
-
-      if (heroSpecialties) {
-        // Position the specialties block so its right edge -- the end
-        // of its widest line, the "n" in "Creation" -- sits exactly
-        // HERO_GAP px left of the photo. Same constant as the
-        // rectangle's own padding, so the two gaps match.
-        heroSpecialties.style.marginLeft = "0px";
-        var specialtiesRect = heroSpecialties.getBoundingClientRect();
-        var photoLeftViewport = heroPhoto.getBoundingClientRect().left;
-        var desiredRightViewport = photoLeftViewport - HERO_GAP;
-        var marginAdjustment = desiredRightViewport - specialtiesRect.right;
-        heroSpecialties.style.marginLeft = marginAdjustment + "px";
-      }
-
-      // Backdrop: a faint rectangle behind both the headshot and the
-      // specialty list, padded by HERO_GAP on every side -- the same
-      // value used for the specialties-to-photo gap above, so the
-      // border-to-text, text-to-photo, and photo-to-border gaps all
-      // read as identical.
-      if (heroBackdrop && heroSpecialties) {
-        var finalPhotoRect = heroPhoto.getBoundingClientRect();
-        var finalSpecialtiesRect = heroSpecialties.getBoundingClientRect();
-
-        var backdropLeft = Math.min(finalPhotoRect.left, finalSpecialtiesRect.left) - HERO_GAP;
-        var backdropRight = Math.max(finalPhotoRect.right, finalSpecialtiesRect.right) + HERO_GAP;
-        var backdropTop = Math.min(finalPhotoRect.top, finalSpecialtiesRect.top) - HERO_GAP;
-        var backdropBottom = Math.max(finalPhotoRect.bottom, finalSpecialtiesRect.bottom) + HERO_GAP;
-
-        heroBackdrop.style.left = (backdropLeft - bleedRect.left) + "px";
-        heroBackdrop.style.top = (backdropTop - bleedRect.top) + "px";
-        heroBackdrop.style.width = (backdropRight - backdropLeft) + "px";
-        heroBackdrop.style.height = (backdropBottom - backdropTop) + "px";
-      }
-
-      if (heroSection) {
-        heroSection.style.paddingBottom = "";
-        var heroSectionRect = heroSection.getBoundingClientRect();
-        var photoBottomViewport = heroPhoto.getBoundingClientRect().bottom;
-        var backdropBottomViewport = heroBackdrop
-          ? heroBackdrop.getBoundingClientRect().bottom
-          : photoBottomViewport;
-        var lowestBottomViewport = Math.max(photoBottomViewport, backdropBottomViewport);
-        var clearance = 48;
-        var overflowPast = lowestBottomViewport + clearance - heroSectionRect.bottom;
-        if (overflowPast > 0) {
-          var currentPaddingBottom = parseFloat(getComputedStyle(heroSection).paddingBottom) || 0;
-          heroSection.style.paddingBottom = (currentPaddingBottom + overflowPast) + "px";
-        }
-      }
-    };
-
-    // Keep the overlay invisible until the layout below is confirmed
-    // against the real, settled state -- not revealed by this first
-    // pass, which runs before the entrance animation has even started
-    // moving (so its numbers are expected to be wrong; that's fine,
-    // nothing is visible yet).
-    //
-    // The hide itself must be instant here, not eased: these elements
-    // have no inline opacity yet, so without disabling the transition
-    // first, "hide" would smoothly fade out from the default-visible
-    // state over 0.25s -- which means the wrong initial position is
-    // still visible, just fading, for that quarter second.
-    heroPhoto.style.transition = "none";
-    heroTagline.style.transition = "none";
-    if (heroBackdrop) heroBackdrop.style.transition = "none";
-    if (heroSpecialties) heroSpecialties.style.transition = "none";
-    hideOverlayUntilPositioned();
-    layoutHeroOverlay();
-    // Force the "no transition" hide to actually apply this frame
-    // before restoring the transition, so the later reveal still
-    // fades in smoothly rather than inheriting "none".
-    void heroPhoto.offsetHeight;
-    heroPhoto.style.transition = "";
-    heroTagline.style.transition = "";
-    if (heroBackdrop) heroBackdrop.style.transition = "";
-    if (heroSpecialties) heroSpecialties.style.transition = "";
-
-    // The headline's entrance animation (words sliding up from below,
-    // ~0.9s duration + up to 0.16s stagger) is still moving the words
-    // for about a second after load. Measuring their position during
-    // that window gives inconsistent, sometimes-wrong results --
-    // confirmed by testing: the same viewport measured a few hundred
-    // milliseconds apart can produce noticeably different rects. Wait
-    // for the animation to actually report completion rather than
-    // guessing a delay, then reposition and reveal together.
-    var finalizeLayout = function () {
-      layoutHeroOverlay();
-      revealOverlay();
-    };
-
-    if (prefersReducedMotion) {
-      // No entrance animation plays in this case (disabled via CSS),
-      // so the words are already in their final position -- no need
-      // to wait for anything beyond fonts.
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(finalizeLayout);
-      } else {
-        finalizeLayout();
-      }
-    } else {
-      var settledCount = 0;
-      var onWordAnimationEnd = function (event) {
-        // animationend bubbles, and each letter span later runs its own
-        // sweep animation -- filter to just the entrance animation so
-        // those don't get miscounted as "the word has settled".
-        if (event.animationName !== "line-up") return;
-        settledCount++;
-        if (settledCount >= heroWords.length) {
-          finalizeLayout();
-        }
-      };
-      heroWords.forEach(function (word) {
-        word.addEventListener("animationend", onWordAnimationEnd);
-      });
-
-      // Belt-and-suspenders: if the animation never fires for any
-      // reason (e.g. is-ready never gets added), don't leave the
-      // overlay hidden forever.
-      setTimeout(finalizeLayout, 2000);
-    }
-
-    window.addEventListener("resize", layoutHeroOverlay);
+  .statement[data-scattered] .letter {
+    transform: none;
+    opacity: 1;
   }
+}
 
-  // ---- Statement: letters push away from the cursor and dim, then
-  // spring back once the cursor moves on. ----
-  var statement = document.querySelector("[data-statement]");
-  var statementText = statement ? statement.querySelector(".statement-text") : null;
-  var statementLines = statement ? statement.querySelectorAll("[data-line]") : null;
+/* ==========================================================================
+   Recognition
+   ========================================================================== */
 
-  if (statement && statementText && statementLines && statementLines.length) {
-    if ("IntersectionObserver" in window) {
-      var revealObserver = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              statementText.classList.add("is-visible");
-              revealObserver.unobserve(statement);
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-      revealObserver.observe(statement);
-    } else {
-      statementText.classList.add("is-visible");
-    }
+.recognition {
+  position: relative;
+  z-index: 1;
+  background: var(--void);
+  color: var(--paper);
+  padding: 4rem var(--space-3);
+  text-align: center;
+}
 
-    if (!prefersReducedMotion) {
-      statementLines.forEach(function (line) {
-        var text = line.textContent;
-        line.textContent = "";
-        var words = text.split(" ");
-        words.forEach(function (word, wordIndex) {
-          var wordSpan = document.createElement("span");
-          wordSpan.className = "statement-word";
-          word.split("").forEach(function (ch) {
-            var span = document.createElement("span");
-            span.className = "letter";
-            span.textContent = ch;
-            wordSpan.appendChild(span);
-          });
-          line.appendChild(wordSpan);
-          if (wordIndex < words.length - 1) {
-            line.appendChild(document.createTextNode(" "));
-          }
-        });
-      });
+.recognition blockquote {
+  max-width: 44rem;
+  margin: 0 auto;
+  text-align: center;
+}
 
-      var letters = Array.prototype.slice.call(statement.querySelectorAll(".letter"));
-      var letterData = letters.map(function (el) {
-        return {
-          el: el,
-          cx: 0,
-          cy: 0,
-          active: false,
-          jitterX: (Math.random() - 0.5) * 40,
-          jitterY: (Math.random() - 0.5) * 40,
-          jitterRot: (Math.random() - 0.5) * 60
-        };
-      });
+.recognition p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 450;
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
+  line-height: 1.35;
+}
 
-      var RADIUS = 130;
-      var MAX_PUSH = 42;
+.recognition cite {
+  display: block;
+  margin-top: var(--space-3);
+  font-style: normal;
+  font-size: 0.85rem;
+  color: rgba(241, 243, 239, 0.6);
+}
 
-      var cacheLetterPositions = function () {
-        var sectionRect = statement.getBoundingClientRect();
-        letterData.forEach(function (d) {
-          var r = d.el.getBoundingClientRect();
-          d.cx = r.left + r.width / 2 - sectionRect.left;
-          d.cy = r.top + r.height / 2 - sectionRect.top;
-        });
-      };
+.award-list {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  margin-top: var(--space-5);
+  background: var(--paper);
+  color: var(--ink);
+  padding: var(--space-4) max(var(--space-3), calc(50% - 20rem));
+  text-align: left;
+}
 
-      cacheLetterPositions();
-      window.addEventListener("resize", cacheLetterPositions);
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(cacheLetterPositions);
-      }
+.award-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+}
 
-      var pointerActive = false;
-      var pointerX = 0;
-      var pointerY = 0;
-      var ticking = false;
+.award-list li:last-child {
+  border-bottom: 0;
+}
 
-      var applyPointerEffect = function () {
-        ticking = false;
-        letterData.forEach(function (d) {
-          var dx = d.cx - pointerX;
-          var dy = d.cy - pointerY;
-          var dist = Math.sqrt(dx * dx + dy * dy);
+.award-name {
+  font-weight: 500;
+  color: var(--ink);
+}
 
-          if (pointerActive && dist < RADIUS) {
-            var factor = 1 - dist / RADIUS;
-            var norm = dist === 0 ? 0 : 1 / dist;
-            var pushX = dx * norm * MAX_PUSH * factor + d.jitterX * factor;
-            var pushY = dy * norm * MAX_PUSH * factor + d.jitterY * factor;
-            var rot = d.jitterRot * factor;
-            d.el.style.transform =
-              "translate(" + pushX.toFixed(1) + "px, " + pushY.toFixed(1) + "px) rotate(" + rot.toFixed(1) + "deg)";
-            d.el.style.color = "#D4DC55";
-            d.active = true;
-          } else if (d.active) {
-            d.el.style.transform = "";
-            d.el.style.color = "";
-            d.active = false;
-          }
-        });
-      };
+.award-detail {
+  color: var(--ink-soft);
+}
 
-      var requestUpdate = function () {
-        if (!ticking) {
-          ticking = true;
-          requestAnimationFrame(applyPointerEffect);
-        }
-      };
+.award-summary {
+  max-width: 40rem;
+  margin: var(--space-3) auto 0;
+  font-size: 0.85rem;
+  color: rgba(241, 243, 239, 0.55);
+}
 
-      statement.addEventListener("pointermove", function (event) {
-        var sectionRect = statement.getBoundingClientRect();
-        pointerX = event.clientX - sectionRect.left;
-        pointerY = event.clientY - sectionRect.top;
-        pointerActive = true;
-        requestUpdate();
-      });
+/* ==========================================================================
+   About
+   ========================================================================== */
 
-      statement.addEventListener("pointerleave", function () {
-        pointerActive = false;
-        requestUpdate();
-      });
+.about {
+  position: relative;
+  z-index: 1;
+  padding: 4rem var(--space-3);
+}
 
-      var lastScrollY = window.scrollY;
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: var(--space-5);
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
 
-      var applyScrollSweep = function () {
-        var sectionRect = statement.getBoundingClientRect();
-        var localY = window.innerHeight / 2 - sectionRect.top;
+.about-copy h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 450;
+  margin-bottom: var(--space-3);
+}
 
-        if (localY >= 0 && localY <= sectionRect.height) {
-          pointerX = sectionRect.width / 2;
-          pointerY = localY;
-          pointerActive = true;
-          requestUpdate();
-        } else if (pointerActive) {
-          pointerActive = false;
-          requestUpdate();
-        }
-      };
+.about-copy p {
+  max-width: 52ch;
+  color: var(--ink-soft);
+  margin-bottom: var(--space-3);
+}
 
-      var scrollTicking = false;
-      window.addEventListener(
-        "scroll",
-        function () {
-          lastScrollY = window.scrollY;
-          if (!scrollTicking) {
-            scrollTicking = true;
-            requestAnimationFrame(function () {
-              scrollTicking = false;
-              applyScrollSweep();
-            });
-          }
-        },
-        { passive: true }
-      );
+.dash-accent {
+  color: #90BD54;
+}
 
-      applyScrollSweep();
-    }
+.about-education {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+  display: inline-block;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.timeline-year {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  padding-top: 0.15rem;
+}
+
+.timeline-role {
+  display: block;
+  font-weight: 600;
+}
+
+.timeline-org {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Contact
+   ========================================================================== */
+
+.contact {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2.4rem var(--space-3) var(--space-5);
+  text-align: left;
+}
+
+.contact h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 450;
+  max-width: 16ch;
+}
+
+.contact p {
+  margin-top: var(--space-2);
+  max-width: 40ch;
+  color: var(--ink-soft);
+}
+
+.contact-email {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 0.15em;
+  transition: opacity 0.2s var(--ease);
+}
+
+.contact-email:hover,
+.contact-email:focus-visible {
+  opacity: 0.6;
+}
+
+.contact-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.contact-email-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.contact-logo {
+  position: absolute;
+  top: -2.75rem;
+  right: 0;
+  width: clamp(2.25rem, 4vw, 3.5rem);
+  height: auto;
+}
+
+.social-button {
+  display: inline-block;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 0.85rem 1.8rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.social-button:hover,
+.social-button:focus-visible {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.site-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-3);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--line);
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  .nav-toggle {
+    display: flex;
   }
-
-  // ---- Footer year ----
-  var yearEl = document.querySelector("[data-year]");
-  if (yearEl) {
-    yearEl.textContent = String(new Date().getFullYear());
+  .nav {
+    display: none;
+    grid-column: 1 / -1;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    background: var(--paper);
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--line);
   }
-})();
+  .nav.is-open {
+    display: flex;
+  }
+  .focus-list {
+    grid-template-columns: 1fr;
+  }
+  .focus-item:nth-child(odd) {
+    border-right: 0;
+    padding-right: 0;
+  }
+  .focus-item:nth-child(even) {
+    padding-left: 0;
+  }
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .hero-photo {
+    position: static;
+    transform: none;
+    margin: var(--space-3) auto 0;
+    width: 9rem;
+  }
+  .hero-tagline {
+    position: static;
+    text-align: left;
+    text-align-last: auto;
+    width: auto;
+    margin-top: var(--space-2);
+  }
+  .hero-full-bleed {
+    /* Desktop reserves generous bottom padding for the photo, which
+       hangs below the baseline via absolute positioning. On mobile
+       the photo is back in normal flow above the tagline, so that
+       padding is just dead space here. */
+    padding-bottom: var(--space-2);
+  }
+  .hero-specialties {
+    margin-top: var(--space-2);
+  }
+}
+
+@media (max-width: 560px) {
+  .site-header { padding: var(--space-2); }
+  .nav { gap: var(--space-2); font-size: 0.82rem; }
+  .hero, .focus, .about, .contact, .recognition { padding-left: var(--space-2); padding-right: var(--space-2); }
+}
