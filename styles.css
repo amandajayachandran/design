@@ -207,6 +207,58 @@ img { max-width: 100%; display: block; }
   right: 0;
 }
 
+.nav-resume {
+  border: 1px solid #90BD54;
+  border-radius: var(--radius);
+  padding: 0.4rem 0.9rem;
+  color: var(--ink);
+}
+
+.resume-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+}
+
+.resume-modal.is-open {
+  display: flex;
+}
+
+.resume-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 18, 16, 0.75);
+}
+
+.resume-modal-panel {
+  position: relative;
+  z-index: 1;
+  width: min(800px, 90vw);
+  height: min(900px, 85vh);
+  background: var(--paper);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.resume-modal-panel iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.resume-modal-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  z-index: 2;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--ink);
+}
+
 .nav-cta {
   font-weight: 600;
 }
