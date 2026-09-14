@@ -341,9 +341,11 @@ img { max-width: 100%; display: block; }
 
 /* ---- Letter sweep: once the entrance settles, a green highlight
    travels across the headline one letter at a time, starting at the
-   "C" of Creative. Each letter is a separate span (added by script.js)
-   so its color can animate independently, staggered by --i (its
-   position in reading order across both words). ---- */
+   "C" of Creative -- then bounces back the other way, and keeps
+   alternating direction indefinitely. Each letter is a separate span
+   (added by script.js) so its color can animate independently,
+   staggered by --i, which script.js reassigns (reversed) before each
+   pass to flip the direction. ---- */
 
 .hero-letter {
   display: inline-block;
@@ -363,15 +365,6 @@ img { max-width: 100%; display: block; }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-massive.is-sweeping .hero-letter { animation: none; }
-}
-
-/* ---- Spotlight: after the sweep finishes, a JS-driven loop lights up
-   a small random run of letters every so often. Uses the transition
-   above rather than a keyframe, since the timing/selection is random
-   and controlled entirely by script.js. ---- */
-
-.hero-letter.is-spotlit {
-  color: #90BD54;
 }
 
 /* ---- Backdrop: a faint rectangle behind the headshot and specialty
