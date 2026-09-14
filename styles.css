@@ -220,6 +220,12 @@ img { max-width: 100%; display: block; }
   padding: 0.4rem 0.9rem;
   color: var(--ink);
   font-size: 0.9rem;
+  transition: background-color 0.2s var(--ease);
+}
+
+.nav-resume:hover,
+.nav-resume:focus-visible {
+  background: #90BD54;
 }
 
 .resume-modal {
