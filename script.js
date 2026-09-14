@@ -96,6 +96,91 @@
     setTimeout(function () {
       heroMassive.classList.add("is-sweeping");
     }, 1050);
+
+    var sweepComplete = false;
+    var heroIsVisible = true;
+    var spotlightActive = false;
+    var spotlightTimer = null;
+
+    var runSpotlightCycle = function () {
+      if (!spotlightActive) return;
+
+      var runLength = 2 + Math.floor(Math.random() * 4); // 2-5 letters
+      var maxStart = Math.max(0, heroLetters.length - runLength);
+      var start = Math.floor(Math.random() * (maxStart + 1));
+      var chosen = heroLetters.slice(start, start + runLength);
+
+      chosen.forEach(function (letter) {
+        letter.classList.add("is-spotlit");
+      });
+
+      spotlightTimer = setTimeout(function () {
+        chosen.forEach(function (letter) {
+          letter.classList.remove("is-spotlit");
+        });
+        if (!spotlightActive) return;
+        // Half-second pause with nothing lit before the next appearance.
+        spotlightTimer = setTimeout(runSpotlightCycle, 500);
+      }, 600);
+    };
+
+    var startSpotlightLoop = function () {
+      if (spotlightActive) return;
+      spotlightActive = true;
+      runSpotlightCycle();
+    };
+
+    var stopSpotlightLoop = function () {
+      spotlightActive = false;
+      if (spotlightTimer) clearTimeout(spotlightTimer);
+      heroLetters.forEach(function (letter) {
+        letter.classList.remove("is-spotlit");
+      });
+    };
+
+    // Only start once the sweep has genuinely finished AND the hero is
+    // currently visible -- guards against the IntersectionObserver's
+    // first callback firing immediately on load (the hero is above
+    // the fold), which would otherwise try to start the spotlight
+    // before the sweep animation has even run.
+    var maybeStartSpotlight = function () {
+      if (sweepComplete && heroIsVisible) startSpotlightLoop();
+    };
+
+    var sweepSettledCount = 0;
+    var onSweepLetterEnd = function (event) {
+      if (event.animationName !== "hero-letter-sweep") return;
+      sweepSettledCount++;
+      if (sweepSettledCount >= heroLetters.length) {
+        heroLetters.forEach(function (letter) {
+          letter.removeEventListener("animationend", onSweepLetterEnd);
+        });
+        sweepComplete = true;
+        maybeStartSpotlight();
+      }
+    };
+    heroLetters.forEach(function (letter) {
+      letter.addEventListener("animationend", onSweepLetterEnd);
+    });
+
+    // Pause the loop while the hero is scrolled out of view, so it's
+    // not running (and repainting) indefinitely in the background.
+    if ("IntersectionObserver" in window) {
+      var spotlightObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            heroIsVisible = entry.isIntersecting;
+            if (heroIsVisible) {
+              maybeStartSpotlight();
+            } else {
+              stopSpotlightLoop();
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      spotlightObserver.observe(heroMassive);
+    }
   }
 
   if (heroTagline && heroPhoto && heroMassive && heroBleed && heroWords && heroWords.length >= 2) {
