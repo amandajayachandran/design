@@ -211,6 +211,36 @@ img { max-width: 100%; display: block; }
   font-weight: 600;
 }
 
+.nav-toggle {
+  display: none;
+  grid-column: 3;
+  justify-self: end;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--ink);
+  transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
 /* ==========================================================================
    Hero
    ========================================================================== */
@@ -396,12 +426,14 @@ img { max-width: 100%; display: block; }
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: 0.01em;
+  transition: opacity 0.25s var(--ease);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-backdrop,
   .hero-photo,
-  .hero-tagline {
+  .hero-tagline,
+  .hero-specialties {
     transition: none;
   }
 }
@@ -538,6 +570,16 @@ img { max-width: 100%; display: block; }
   font-size: clamp(1.8rem, 5.2vw, 4.2rem);
   line-height: 1.08;
   letter-spacing: -0.005em;
+}
+
+/* Each word is wrapped in its own nowrap span (added by script.js)
+   before being split into per-letter spans -- this keeps a word from
+   breaking across lines when it doesn't fit, since the letters alone
+   have no inherent "stay together" behavior once split. Normal
+   wrapping still happens at the actual space between words. */
+.statement-word {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .statement-line .letter {
@@ -819,6 +861,26 @@ img { max-width: 100%; display: block; }
    ========================================================================== */
 
 @media (max-width: 860px) {
+  .nav-toggle {
+    display: flex;
+  }
+  .nav {
+    display: none;
+    grid-column: 1 / -1;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    background: var(--paper);
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav.is-open {
+    display: flex;
+  }
   .focus-list {
     grid-template-columns: 1fr;
   }
@@ -844,6 +906,16 @@ img { max-width: 100%; display: block; }
     text-align: left;
     text-align-last: auto;
     width: auto;
+    margin-top: var(--space-2);
+  }
+  .hero-full-bleed {
+    /* Desktop reserves generous bottom padding for the photo, which
+       hangs below the baseline via absolute positioning. On mobile
+       the photo is back in normal flow above the tagline, so that
+       padding is just dead space here. */
+    padding-bottom: var(--space-2);
+  }
+  .hero-specialties {
     margin-top: var(--space-2);
   }
 }
