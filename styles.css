@@ -521,17 +521,16 @@ img { max-width: 100%; display: block; }
 
 .mywork-note-cta {
   flex-shrink: 0;
-  border: 1px solid var(--paper);
+  border: 1px solid #90BD54;
   border-radius: var(--radius);
   padding: 0.6rem 1.1rem;
   font-size: 0.9rem;
-  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  transition: background-color 0.2s var(--ease);
 }
 
 .mywork-note-cta:hover,
 .mywork-note-cta:focus-visible {
-  background: var(--paper);
-  color: var(--void);
+  background: #90BD54;
 }
 
 /* ==========================================================================
@@ -618,7 +617,7 @@ img { max-width: 100%; display: block; }
   z-index: 1;
   background: var(--void);
   color: var(--paper);
-  padding: 4rem var(--space-3) var(--space-1);
+  padding: 4rem var(--space-3);
   text-align: center;
 }
 
