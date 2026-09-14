@@ -208,6 +208,8 @@ img { max-width: 100%; display: block; }
 }
 
 .nav-resume {
+  display: inline-block;
+  margin-bottom: var(--space-3);
   border: 1px solid #90BD54;
   border-radius: var(--radius);
   padding: 0.4rem 0.9rem;
