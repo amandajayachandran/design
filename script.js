@@ -18,6 +18,28 @@
     window.addEventListener("scroll", onScroll, { passive: true });
   }
 
+  // ---- Mobile nav: hamburger toggle opens/closes the dropdown,
+  // closes on link click or on resizing past the mobile breakpoint ----
+  var navToggle = document.querySelector(".nav-toggle");
+  var primaryNav = document.querySelector(".nav");
+  if (navToggle && primaryNav) {
+    var closeNav = function () {
+      primaryNav.classList.remove("is-open");
+      navToggle.setAttribute("aria-expanded", "false");
+    };
+    var toggleNav = function () {
+      var isOpen = primaryNav.classList.toggle("is-open");
+      navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    };
+    navToggle.addEventListener("click", toggleNav);
+    primaryNav.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", closeNav);
+    });
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 860) closeNav();
+    });
+  }
+
   // ---- Hero reveal: trigger the single orchestrated load-in ----
   var heroLine = document.querySelector("[data-reveal]");
   if (heroLine) {
@@ -86,12 +108,14 @@
       heroPhoto.style.opacity = "0";
       heroTagline.style.opacity = "0";
       if (heroBackdrop) heroBackdrop.style.opacity = "0";
+      if (heroSpecialties) heroSpecialties.style.opacity = "0";
     };
 
     var revealOverlay = function () {
       heroPhoto.style.opacity = "";
       heroTagline.style.opacity = "";
       if (heroBackdrop) heroBackdrop.style.opacity = "";
+      if (heroSpecialties) heroSpecialties.style.opacity = "";
     };
 
     var clearOverlayStyles = function () {
@@ -200,28 +224,76 @@
           heroSection.style.paddingBottom = (currentPaddingBottom + overflowPast) + "px";
         }
       }
+    };
 
+    // Keep the overlay invisible until the layout below is confirmed
+    // against the real, settled state -- not revealed by this first
+    // pass, which runs before the entrance animation has even started
+    // moving (so its numbers are expected to be wrong; that's fine,
+    // nothing is visible yet).
+    //
+    // The hide itself must be instant here, not eased: these elements
+    // have no inline opacity yet, so without disabling the transition
+    // first, "hide" would smoothly fade out from the default-visible
+    // state over 0.25s -- which means the wrong initial position is
+    // still visible, just fading, for that quarter second.
+    heroPhoto.style.transition = "none";
+    heroTagline.style.transition = "none";
+    if (heroBackdrop) heroBackdrop.style.transition = "none";
+    if (heroSpecialties) heroSpecialties.style.transition = "none";
+    hideOverlayUntilPositioned();
+    layoutHeroOverlay();
+    // Force the "no transition" hide to actually apply this frame
+    // before restoring the transition, so the later reveal still
+    // fades in smoothly rather than inheriting "none".
+    void heroPhoto.offsetHeight;
+    heroPhoto.style.transition = "";
+    heroTagline.style.transition = "";
+    if (heroBackdrop) heroBackdrop.style.transition = "";
+    if (heroSpecialties) heroSpecialties.style.transition = "";
+
+    // The headline's entrance animation (words sliding up from below,
+    // ~0.9s duration + up to 0.16s stagger) is still moving the words
+    // for about a second after load. Measuring their position during
+    // that window gives inconsistent, sometimes-wrong results --
+    // confirmed by testing: the same viewport measured a few hundred
+    // milliseconds apart can produce noticeably different rects. Wait
+    // for the animation to actually report completion rather than
+    // guessing a delay, then reposition and reveal together.
+    var finalizeLayout = function () {
+      layoutHeroOverlay();
       revealOverlay();
     };
 
-    // Keep the overlay invisible until we've measured against the real
-    // webfont at least once, so nothing has to jump after the fact.
-    hideOverlayUntilPositioned();
-
-    // First pass: run immediately in case fonts are already cached/loaded.
-    layoutHeroOverlay();
-
-    // Re-run once the real webfont has swapped in -- this affects the
-    // vertical baseline measurement (font metrics), not the horizontal
-    // centering, which is now anchored to the container and doesn't
-    // depend on fonts at all.
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () {
-        hideOverlayUntilPositioned();
-        layoutHeroOverlay();
-      });
+    if (prefersReducedMotion) {
+      // No entrance animation plays in this case (disabled via CSS),
+      // so the words are already in their final position -- no need
+      // to wait for anything beyond fonts.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(finalizeLayout);
+      } else {
+        finalizeLayout();
+      }
     } else {
-      revealOverlay();
+      var settledCount = 0;
+      var onWordAnimationEnd = function (event) {
+        // animationend bubbles, and each letter span later runs its own
+        // sweep animation -- filter to just the entrance animation so
+        // those don't get miscounted as "the word has settled".
+        if (event.animationName !== "line-up") return;
+        settledCount++;
+        if (settledCount >= heroWords.length) {
+          finalizeLayout();
+        }
+      };
+      heroWords.forEach(function (word) {
+        word.addEventListener("animationend", onWordAnimationEnd);
+      });
+
+      // Belt-and-suspenders: if the animation never fires for any
+      // reason (e.g. is-ready never gets added), don't leave the
+      // overlay hidden forever.
+      setTimeout(finalizeLayout, 2000);
     }
 
     window.addEventListener("resize", layoutHeroOverlay);
@@ -255,15 +327,20 @@
       statementLines.forEach(function (line) {
         var text = line.textContent;
         line.textContent = "";
-        text.split("").forEach(function (ch) {
-          if (ch === " ") {
+        var words = text.split(" ");
+        words.forEach(function (word, wordIndex) {
+          var wordSpan = document.createElement("span");
+          wordSpan.className = "statement-word";
+          word.split("").forEach(function (ch) {
+            var span = document.createElement("span");
+            span.className = "letter";
+            span.textContent = ch;
+            wordSpan.appendChild(span);
+          });
+          line.appendChild(wordSpan);
+          if (wordIndex < words.length - 1) {
             line.appendChild(document.createTextNode(" "));
-            return;
           }
-          var span = document.createElement("span");
-          span.className = "letter";
-          span.textContent = ch;
-          line.appendChild(span);
         });
       });
 
