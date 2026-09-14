@@ -1,555 +1,257 @@
-// Amanda Jayachandran — design skeleton
-// Small, deliberate interactions only. No framework required.
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Amanda Jayachandran — Creative and Content Director, Advisor &amp; Consultant</title>
+  <meta name="description" content="Amanda Jayachandran is a creative and content director. Nineteen years across Lionbridge, Edelman, Eric Mower + Associates (Mower), and HB Agency. 100+ industry awards since 2020, including four Stevie Awards from the International Business Awards." />
+  <meta name="theme-color" content="#0E1210" />
 
-(function () {
-  "use strict";
+  <meta property="og:title" content="Amanda Jayachandran — Creative and Content Director" />
+  <meta property="og:description" content="Content strategy and creative direction. 100+ industry awards, including four Stevie Awards from the International Business Awards." />
+  <meta property="og:type" content="website" />
 
-  var prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Big+Shoulders+Display:wght@900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  // ---- Header: solid background once the page has scrolled ----
-  var header = document.querySelector("[data-header]");
-  if (header) {
-    var onScroll = function () {
-      header.classList.toggle("is-scrolled", window.scrollY > 8);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-  }
+  <link rel="stylesheet" href="styles.css?v=2" />
+</head>
+<body>
 
-  // ---- Mobile nav: hamburger toggle opens/closes the dropdown,
-  // closes on link click or on resizing past the mobile breakpoint ----
-  var navToggle = document.querySelector(".nav-toggle");
-  var primaryNav = document.querySelector(".nav");
-  if (navToggle && primaryNav) {
-    var closeNav = function () {
-      primaryNav.classList.remove("is-open");
-      navToggle.setAttribute("aria-expanded", "false");
-    };
-    var toggleNav = function () {
-      var isOpen = primaryNav.classList.toggle("is-open");
-      navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    };
-    navToggle.addEventListener("click", toggleNav);
-    primaryNav.querySelectorAll("a").forEach(function (link) {
-      link.addEventListener("click", closeNav);
-    });
-    window.addEventListener("resize", function () {
-      if (window.innerWidth > 860) closeNav();
-    });
-  }
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  // ---- Hero reveal: trigger the single orchestrated load-in ----
-  var heroLine = document.querySelector("[data-reveal]");
-  if (heroLine) {
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        heroLine.classList.add("is-ready");
-      });
-    });
-  }
+  <header class="site-header" data-header>
+    <a class="mark-logo-link" href="#top" aria-label="Amanda Jayachandran — home">
+      <img src="images/logo-mark.png" alt="Amanda Jayachandran" class="mark-logo" />
+    </a>
+    <a class="mark-text" href="#top">AMANDA JAYACHANDRAN</a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <a href="#about">About</a>
+      <a href="#focus">Expertise</a>
+      <a href="#recognition">Awards</a>
+      <a href="#contact" class="nav-cta">Contact</a>
+    </nav>
+  </header>
 
-  // ---- Hero overlay: position the headshot centered on the hero
-  // section itself, and stretch the tagline between the headshot's
-  // right edge and the headline's right edge. ----
-  var heroTagline = document.querySelector(".hero-tagline");
-  var heroPhoto = document.querySelector(".hero-photo");
-  var heroMassive = document.querySelector(".hero-massive");
-  var heroBleed = document.querySelector(".hero-full-bleed");
-  var heroSpecialties = document.querySelector(".hero-specialties");
-  var heroSection = document.querySelector(".hero");
-  var heroBackdrop = document.querySelector(".hero-backdrop");
-  var heroWords = heroMassive ? heroMassive.querySelectorAll(".hero-word") : null;
+  <main id="main">
 
-  // Single source of truth for spacing: the gap from the rectangle's
-  // border to the specialties text, from the specialties text to the
-  // photo, and from the photo to the rectangle's border, are all the
-  // same value.
-  var HERO_GAP = 32;
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="top">
+      <div class="hero-inner">
+        <p class="eyebrow">Blending hands-on craft with high-level creative and content leadership.</p>
+        <p class="hero-stat-number">100<span class="dash-accent">+</span><span class="hero-stat-label">industry awards</span></p>
 
-  // Split each word into one <span class="hero-letter"> per character,
-  // tagged with --i (its position across both words combined) for the
-  // staggered sweep animation.
-  var heroLetters = [];
-  if (heroWords && heroWords.length >= 2) {
-    var letterIndex = 0;
-    heroWords.forEach(function (word) {
-      var text = word.textContent;
-      word.textContent = "";
-      text.split("").forEach(function (ch) {
-        var span = document.createElement("span");
-        span.className = "hero-letter";
-        span.style.setProperty("--i", letterIndex);
-        span.textContent = ch;
-        word.appendChild(span);
-        heroLetters.push(span);
-        letterIndex++;
-      });
-    });
-  }
+        <div class="hero-full-bleed">
+          <div class="hero-backdrop"></div>
+          <h1 class="hero-massive" data-reveal>
+            <span class="hero-word">Creative</span>
+            <span class="hero-word">Director</span>
+          </h1>
+          <div class="hero-photo">
+            <img src="images/amanda-headshot.jpg" alt="Amanda Jayachandran" />
+          </div>
+          <p class="hero-tagline">Building brands through immersive experiences</p>
+        </div>
 
-  // Start the letter sweep once the entrance settles (0.9s duration +
-  // up to 0.16s stagger on the two words) so it reads as one
-  // continuous load sequence. Runs once; skipped under reduced motion.
-  if (heroMassive && heroLetters.length && !prefersReducedMotion) {
-    setTimeout(function () {
-      heroMassive.classList.add("is-sweeping");
-    }, 1050);
+        <ul class="hero-specialties">
+          <li><span class="dash-accent">/</span> Creative Direction</li>
+          <li><span class="dash-accent">/</span> Brand Vision &amp; Creation</li>
+          <li><span class="dash-accent">/</span> Content Strategy</li>
+          <li><span class="dash-accent">/</span> Team Leadership</li>
+        </ul>
+      </div>
+    </section>
 
-    var sweepComplete = false;
-    var heroIsVisible = true;
-    var spotlightActive = false;
-    var spotlightTimer = null;
+    <!-- ============ STATEMENT ============ -->
+    <section class="statement" id="statement" data-statement>
+      <p class="statement-text">
+        <span class="sr-only">
+          I create memorable experiences by designing and leading every
+          touchpoint of the brand, from strategy to creative and content.
+        </span>
+        <span class="statement-visual" aria-hidden="true">
+          <span class="statement-line" data-line>I create memorable experiences</span>
+          <span class="statement-line" data-line>by designing and leading</span>
+          <span class="statement-line" data-line>every touchpoint of the brand</span>
+          <span class="statement-line" data-line>from strategy to creative and content.</span>
+        </span>
+      </p>
+    </section>
 
-    var runSpotlightCycle = function () {
-      if (!spotlightActive) return;
+    <!-- ============ ABOUT ============ -->
+    <section class="about" id="about">
+      <div class="about-grid">
+        <div class="about-copy">
+          <p class="section-kicker">01</p>
+          <h2>About</h2>
+          <p>
+            I drive comprehensive brand strategy, visual execution, and
+            creative vision across fast-paced, multi-language global
+            environments, balancing high-level leadership with hands-on
+            concepting and execution. By building and guiding
+            high-performing teams, I scale content operations while
+            personally developing engaging, memorable campaign concepts
+            that break through the noise across digital, print, video,
+            websites, events, and more.
+          </p>
+          <p>
+            I manage every initiative end-to-end <span class="dash-accent">—</span> from initial brief and
+            budget oversight to direct content creation, demand
+            generation, and executive communications <span class="dash-accent">—</span> ensuring every
+            deliverable amplifies brand presence and drives measurable
+            results.
+          </p>
+          <p>
+            To ensure sustainable growth, I compose strategic roadmaps,
+            integrate SEO<span class="dash-accent">/</span>AEO<span class="dash-accent">/</span>GEO, and establish streamlined processes
+            alongside accessible design libraries that maintain brand
+            integrity across large organizations.
+          </p>
+          <p>
+            Collaboration with C-suite is central to my approach, as I
+            regularly present data-driven analytics and creative
+            initiatives directly to executive teams. Ultimately, I
+            partner with key stakeholders to align on strategy and craft
+            actionable, culturally rich experiences that deeply resonate
+            with target audiences.
+          </p>
+          <p class="about-education">B.A. Visual Communications <span class="dash-accent">—</span> The George Washington University</p>
+        </div>
+        <ol class="timeline">
+          <li>
+            <span class="timeline-year">2019<span class="dash-accent">—</span>Now</span>
+            <span class="timeline-role">Creative Director &amp; Content Director</span>
+            <span class="timeline-org">Lionbridge</span>
+          </li>
+          <li>
+            <span class="timeline-year">2015<span class="dash-accent">—</span>2019</span>
+            <span class="timeline-role">Associate Creative Director</span>
+            <span class="timeline-org">Eric Mower <span class="dash-accent">+</span> Associates (HB<span class="dash-accent">/</span>Mower)</span>
+          </li>
+          <li>
+            <span class="timeline-year">2007<span class="dash-accent">—</span>2015</span>
+            <span class="timeline-role">Creative Strategist</span>
+            <span class="timeline-org">HB Agency</span>
+          </li>
+          <li>
+            <span class="timeline-year">2000<span class="dash-accent">—</span>2007</span>
+            <span class="timeline-role">Art Director</span>
+            <span class="timeline-org">Edelman</span>
+          </li>
+        </ol>
+      </div>
+    </section>
 
-      var runLength = 2 + Math.floor(Math.random() * 4); // 2-5 letters
-      var maxStart = Math.max(0, heroLetters.length - runLength);
-      var start = Math.floor(Math.random() * (maxStart + 1));
-      var chosen = heroLetters.slice(start, start + runLength);
+    <!-- ============ ADVISORY FOCUS ============ -->
+    <section class="focus" id="focus">
+      <div class="focus-inner">
+        <div class="section-head">
+          <p class="section-kicker section-kicker--void">02</p>
+          <h2>Expertise</h2>
+          <p>Creative design and content strategy for global brands building their next campaign, platform, or brand voice.</p>
+        </div>
 
-      chosen.forEach(function (letter) {
-        letter.classList.add("is-spotlit");
-      });
+      <dl class="focus-list">
+        <div class="focus-item">
+          <dt>Creative direction &amp; campaign development</dt>
+          <dd>Concept through execution, including global campaigns localized across multiple languages.</dd>
+        </div>
+        <div class="focus-item">
+          <dt>Content strategy &amp; brand voice</dt>
+          <dd>Positioning, messaging, and voice systems that hold up across channels and markets.</dd>
+        </div>
+        <div class="focus-item">
+          <dt>Creative team leadership</dt>
+          <dd>Building, mentoring, and directing in-house and agency creative teams.</dd>
+        </div>
+        <div class="focus-item">
+          <dt>Content for AI-driven platforms</dt>
+          <dd>Positioning and storytelling for AI-first products and solutions.</dd>
+        </div>
+      </dl>
 
-      spotlightTimer = setTimeout(function () {
-        chosen.forEach(function (letter) {
-          letter.classList.remove("is-spotlit");
-        });
-        if (!spotlightActive) return;
-        // Half-second pause with nothing lit before the next appearance.
-        spotlightTimer = setTimeout(runSpotlightCycle, 500);
-      }, 600);
-    };
+      <div class="mywork-note">
+        <p>
+          Full case studies and portfolio available upon request.
+        </p>
+        <a class="mywork-note-cta" href="mailto:amanda.jayachandran@gmail.com?subject=Request%20To%20See%20Your%20Designs%20">
+          Request to see my designs
+        </a>
+      </div>
+      </div>
+    </section>
 
-    var startSpotlightLoop = function () {
-      if (spotlightActive) return;
-      spotlightActive = true;
-      runSpotlightCycle();
-    };
+    <!-- ============ RECOGNITION ============ -->
+    <section class="recognition" id="recognition">
+      <p class="section-kicker section-kicker--void">03</p>
+      <blockquote>
+        <p>
+          “The Aurora AI campaign didn’t just explain a product <span class="dash-accent">—</span>
+          it made the case for what creative and AI can build together.”
+        </p>
+        <cite>Gold Stevie Award, Branded Content Campaign of the Year <span class="dash-accent">—</span> 2025 International Business Awards</cite>
+      </blockquote>
 
-    var stopSpotlightLoop = function () {
-      spotlightActive = false;
-      if (spotlightTimer) clearTimeout(spotlightTimer);
-      heroLetters.forEach(function (letter) {
-        letter.classList.remove("is-spotlit");
-      });
-    };
+      <ul class="award-list">
+        <li>
+          <span class="award-name">Bronze Stevie Award <span class="dash-accent">—</span> Branded Content Campaign of the Year</span>
+          <span class="award-detail">2026 International Business Awards, for Lionbridge Games Samurai Campaign</span>
+        </li>
+         <li>
+          <span class="award-name">Gold Stevie Award <span class="dash-accent">—</span> Branded Content Campaign of the Year</span>
+          <span class="award-detail">2025 International Business Awards, for Lionbridge Aurora AI</span>
+        </li>
+        <li>
+          <span class="award-name">Bronze Stevie Award <span class="dash-accent">—</span> Branded Content Campaign of the Year</span>
+          <span class="award-detail">2024 International Business Awards, for the Patient Outcomes Campaign</span>
+        </li>
+        <li>
+          <span class="award-name">Silver Stevie Award <span class="dash-accent">—</span> New Product Introduction of the Year</span>
+          <span class="award-detail">2023 International Business Awards, for Lionbridge Language Cloud</span>
+        </li>
+        <li>
+          <span class="award-name">Gold Stevie Award <span class="dash-accent">—</span> Brand Renovation</span>
+          <span class="award-detail">2022 International Business Awards, for Lionbridge Games</span>
+        </li>
+      </ul>
 
-    // Only start once the sweep has genuinely finished AND the hero is
-    // currently visible -- guards against the IntersectionObserver's
-    // first callback firing immediately on load (the hero is above
-    // the fold), which would otherwise try to start the spotlight
-    // before the sweep animation has even run.
-    var maybeStartSpotlight = function () {
-      if (sweepComplete && heroIsVisible) startSpotlightLoop();
-    };
+      <p class="award-summary">
+        <span class="dash-accent">+</span> 100 additional Gold, Platinum, and Silver awards from Communicator Awards, W3, 
+        Telly, dotCOMM, Ava Digital Awards, Summit Creative Awards, dotCOMM Awards, PRSA (Public Relations Society of America Award) and more. Full list available upon request.
+      </p>
+    </section>
 
-    var sweepSettledCount = 0;
-    var onSweepLetterEnd = function (event) {
-      if (event.animationName !== "hero-letter-sweep") return;
-      sweepSettledCount++;
-      if (sweepSettledCount >= heroLetters.length) {
-        heroLetters.forEach(function (letter) {
-          letter.removeEventListener("animationend", onSweepLetterEnd);
-        });
-        sweepComplete = true;
-        maybeStartSpotlight();
-      }
-    };
-    heroLetters.forEach(function (letter) {
-      letter.addEventListener("animationend", onSweepLetterEnd);
-    });
+    <!-- ============ CONTACT ============ -->
+    <section class="contact" id="contact">
+      <p class="section-kicker">04</p>
+      <h2>Let’s talk</h2>
+      <p>
+        Open to consulting and advisory engagements <span class="dash-accent">—</span> content strategy,
+        creative direction and execution, and campaign development for teams and brands
+        ready to create high-impact.
+      </p>
+      <div class="contact-actions">
+        <div class="contact-email-wrap">
+          <img src="images/logo-mark.png" alt="" class="contact-logo" />
+          <a class="contact-email" href="mailto:amanda.jayachandran@gmail.com">
+            amanda.jayachandran@gmail.com
+          </a>
+        </div>
+        <a class="social-button" href="https://www.linkedin.com/in/ajayachandran/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+    </section>
 
-    // Pause the loop while the hero is scrolled out of view, so it's
-    // not running (and repainting) indefinitely in the background.
-    if ("IntersectionObserver" in window) {
-      var spotlightObserver = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            heroIsVisible = entry.isIntersecting;
-            if (heroIsVisible) {
-              maybeStartSpotlight();
-            } else {
-              stopSpotlightLoop();
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
-      spotlightObserver.observe(heroMassive);
-    }
-  }
+  </main>
 
-  if (heroTagline && heroPhoto && heroMassive && heroBleed && heroWords && heroWords.length >= 2) {
-    var MOBILE_BREAKPOINT = 860;
+  <footer class="site-footer">
+    <p>&copy; <span data-year></span> Amanda Jayachandran</p>
+    <a href="#top">Back to top</a>
+  </footer>
 
-    // Hidden until the first real layout pass completes, so nothing
-    // ever visibly snaps into position after the webfont swaps in.
-    var hideOverlayUntilPositioned = function () {
-      if (window.innerWidth <= MOBILE_BREAKPOINT) return;
-      heroPhoto.style.opacity = "0";
-      heroTagline.style.opacity = "0";
-      if (heroBackdrop) heroBackdrop.style.opacity = "0";
-      if (heroSpecialties) heroSpecialties.style.opacity = "0";
-    };
-
-    var revealOverlay = function () {
-      heroPhoto.style.opacity = "";
-      heroTagline.style.opacity = "";
-      if (heroBackdrop) heroBackdrop.style.opacity = "";
-      if (heroSpecialties) heroSpecialties.style.opacity = "";
-    };
-
-    var clearOverlayStyles = function () {
-      heroPhoto.style.left = "";
-      heroPhoto.style.top = "";
-      heroTagline.style.left = "";
-      heroTagline.style.top = "";
-      heroTagline.style.width = "";
-      if (heroSpecialties) {
-        heroSpecialties.style.marginLeft = "";
-      }
-      if (heroSection) {
-        heroSection.style.paddingBottom = "";
-      }
-      if (heroBackdrop) {
-        heroBackdrop.style.left = "";
-        heroBackdrop.style.top = "";
-        heroBackdrop.style.width = "";
-        heroBackdrop.style.height = "";
-      }
-      revealOverlay();
-    };
-
-    var layoutHeroOverlay = function () {
-      if (window.innerWidth <= MOBILE_BREAKPOINT) {
-        clearOverlayStyles();
-        return;
-      }
-
-      var bleedRect = heroBleed.getBoundingClientRect();
-      var secondWordRect = heroWords[1].getBoundingClientRect();
-      var fontSizePx = parseFloat(getComputedStyle(heroMassive).fontSize) || 0;
-
-      // Center the headshot on the hero section's own box, not on the
-      // gap between the two headline words -- that gap only lines up
-      // with true center when both words happen to render the exact
-      // same width, which isn't guaranteed and isn't stable across
-      // font-load timing. This anchor is fixed for a given viewport
-      // width, so the result is identical on every reload.
-      var centerX = (bleedRect.left + bleedRect.right) / 2;
-
-      var trueBaseline = secondWordRect.bottom - fontSizePx * 0.22;
-      var baselineY = trueBaseline - fontSizePx * 0.1;
-
-      heroPhoto.style.left = (centerX - bleedRect.left) + "px";
-      heroPhoto.style.top = (baselineY - bleedRect.top) + "px";
-
-      var directorLetters = heroWords[1].querySelectorAll(".hero-letter");
-      var firstRRight = directorLetters.length > 2
-        ? directorLetters[2].getBoundingClientRect().right
-        : secondWordRect.left;
-
-      var taglineLeft = firstRRight - bleedRect.left;
-      var taglineRight = secondWordRect.right - bleedRect.left;
-      var headlineBottom = heroMassive.getBoundingClientRect().bottom - bleedRect.top;
-
-      heroTagline.style.left = taglineLeft + "px";
-      heroTagline.style.width = Math.max(taglineRight - taglineLeft, 40) + "px";
-      heroTagline.style.top = (headlineBottom + 12) + "px";
-
-      if (heroSpecialties) {
-        // Position the specialties block so its right edge -- the end
-        // of its widest line, the "n" in "Creation" -- sits exactly
-        // HERO_GAP px left of the photo. Same constant as the
-        // rectangle's own padding, so the two gaps match.
-        heroSpecialties.style.marginLeft = "0px";
-        var specialtiesRect = heroSpecialties.getBoundingClientRect();
-        var photoLeftViewport = heroPhoto.getBoundingClientRect().left;
-        var desiredRightViewport = photoLeftViewport - HERO_GAP;
-        var marginAdjustment = desiredRightViewport - specialtiesRect.right;
-        heroSpecialties.style.marginLeft = marginAdjustment + "px";
-      }
-
-      // Backdrop: a faint rectangle behind both the headshot and the
-      // specialty list, padded by HERO_GAP on every side -- the same
-      // value used for the specialties-to-photo gap above, so the
-      // border-to-text, text-to-photo, and photo-to-border gaps all
-      // read as identical.
-      if (heroBackdrop && heroSpecialties) {
-        var finalPhotoRect = heroPhoto.getBoundingClientRect();
-        var finalSpecialtiesRect = heroSpecialties.getBoundingClientRect();
-
-        var backdropLeft = Math.min(finalPhotoRect.left, finalSpecialtiesRect.left) - HERO_GAP;
-        var backdropRight = Math.max(finalPhotoRect.right, finalSpecialtiesRect.right) + HERO_GAP;
-        var backdropTop = Math.min(finalPhotoRect.top, finalSpecialtiesRect.top) - HERO_GAP;
-        var backdropBottom = Math.max(finalPhotoRect.bottom, finalSpecialtiesRect.bottom) + HERO_GAP;
-
-        heroBackdrop.style.left = (backdropLeft - bleedRect.left) + "px";
-        heroBackdrop.style.top = (backdropTop - bleedRect.top) + "px";
-        heroBackdrop.style.width = (backdropRight - backdropLeft) + "px";
-        heroBackdrop.style.height = (backdropBottom - backdropTop) + "px";
-      }
-
-      if (heroSection) {
-        heroSection.style.paddingBottom = "";
-        var heroSectionRect = heroSection.getBoundingClientRect();
-        var photoBottomViewport = heroPhoto.getBoundingClientRect().bottom;
-        var backdropBottomViewport = heroBackdrop
-          ? heroBackdrop.getBoundingClientRect().bottom
-          : photoBottomViewport;
-        var lowestBottomViewport = Math.max(photoBottomViewport, backdropBottomViewport);
-        var clearance = 48;
-        var overflowPast = lowestBottomViewport + clearance - heroSectionRect.bottom;
-        if (overflowPast > 0) {
-          var currentPaddingBottom = parseFloat(getComputedStyle(heroSection).paddingBottom) || 0;
-          heroSection.style.paddingBottom = (currentPaddingBottom + overflowPast) + "px";
-        }
-      }
-    };
-
-    // Keep the overlay invisible until the layout below is confirmed
-    // against the real, settled state -- not revealed by this first
-    // pass, which runs before the entrance animation has even started
-    // moving (so its numbers are expected to be wrong; that's fine,
-    // nothing is visible yet).
-    //
-    // The hide itself must be instant here, not eased: these elements
-    // have no inline opacity yet, so without disabling the transition
-    // first, "hide" would smoothly fade out from the default-visible
-    // state over 0.25s -- which means the wrong initial position is
-    // still visible, just fading, for that quarter second.
-    heroPhoto.style.transition = "none";
-    heroTagline.style.transition = "none";
-    if (heroBackdrop) heroBackdrop.style.transition = "none";
-    if (heroSpecialties) heroSpecialties.style.transition = "none";
-    hideOverlayUntilPositioned();
-    layoutHeroOverlay();
-    // Force the "no transition" hide to actually apply this frame
-    // before restoring the transition, so the later reveal still
-    // fades in smoothly rather than inheriting "none".
-    void heroPhoto.offsetHeight;
-    heroPhoto.style.transition = "";
-    heroTagline.style.transition = "";
-    if (heroBackdrop) heroBackdrop.style.transition = "";
-    if (heroSpecialties) heroSpecialties.style.transition = "";
-
-    // The headline's entrance animation (words sliding up from below,
-    // ~0.9s duration + up to 0.16s stagger) is still moving the words
-    // for about a second after load. Measuring their position during
-    // that window gives inconsistent, sometimes-wrong results --
-    // confirmed by testing: the same viewport measured a few hundred
-    // milliseconds apart can produce noticeably different rects. Wait
-    // for the animation to actually report completion rather than
-    // guessing a delay, then reposition and reveal together.
-    var finalizeLayout = function () {
-      layoutHeroOverlay();
-      revealOverlay();
-    };
-
-    if (prefersReducedMotion) {
-      // No entrance animation plays in this case (disabled via CSS),
-      // so the words are already in their final position -- no need
-      // to wait for anything beyond fonts.
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(finalizeLayout);
-      } else {
-        finalizeLayout();
-      }
-    } else {
-      var settledCount = 0;
-      var onWordAnimationEnd = function (event) {
-        // animationend bubbles, and each letter span later runs its own
-        // sweep animation -- filter to just the entrance animation so
-        // those don't get miscounted as "the word has settled".
-        if (event.animationName !== "line-up") return;
-        settledCount++;
-        if (settledCount >= heroWords.length) {
-          finalizeLayout();
-        }
-      };
-      heroWords.forEach(function (word) {
-        word.addEventListener("animationend", onWordAnimationEnd);
-      });
-
-      // Belt-and-suspenders: if the animation never fires for any
-      // reason (e.g. is-ready never gets added), don't leave the
-      // overlay hidden forever.
-      setTimeout(finalizeLayout, 2000);
-    }
-
-    window.addEventListener("resize", layoutHeroOverlay);
-  }
-
-  // ---- Statement: letters push away from the cursor and dim, then
-  // spring back once the cursor moves on. ----
-  var statement = document.querySelector("[data-statement]");
-  var statementText = statement ? statement.querySelector(".statement-text") : null;
-  var statementLines = statement ? statement.querySelectorAll("[data-line]") : null;
-
-  if (statement && statementText && statementLines && statementLines.length) {
-    if ("IntersectionObserver" in window) {
-      var revealObserver = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              statementText.classList.add("is-visible");
-              revealObserver.unobserve(statement);
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-      revealObserver.observe(statement);
-    } else {
-      statementText.classList.add("is-visible");
-    }
-
-    if (!prefersReducedMotion) {
-      statementLines.forEach(function (line) {
-        var text = line.textContent;
-        line.textContent = "";
-        var words = text.split(" ");
-        words.forEach(function (word, wordIndex) {
-          var wordSpan = document.createElement("span");
-          wordSpan.className = "statement-word";
-          word.split("").forEach(function (ch) {
-            var span = document.createElement("span");
-            span.className = "letter";
-            span.textContent = ch;
-            wordSpan.appendChild(span);
-          });
-          line.appendChild(wordSpan);
-          if (wordIndex < words.length - 1) {
-            line.appendChild(document.createTextNode(" "));
-          }
-        });
-      });
-
-      var letters = Array.prototype.slice.call(statement.querySelectorAll(".letter"));
-      var letterData = letters.map(function (el) {
-        return {
-          el: el,
-          cx: 0,
-          cy: 0,
-          active: false,
-          jitterX: (Math.random() - 0.5) * 40,
-          jitterY: (Math.random() - 0.5) * 40,
-          jitterRot: (Math.random() - 0.5) * 60
-        };
-      });
-
-      var RADIUS = 130;
-      var MAX_PUSH = 42;
-
-      var cacheLetterPositions = function () {
-        var sectionRect = statement.getBoundingClientRect();
-        letterData.forEach(function (d) {
-          var r = d.el.getBoundingClientRect();
-          d.cx = r.left + r.width / 2 - sectionRect.left;
-          d.cy = r.top + r.height / 2 - sectionRect.top;
-        });
-      };
-
-      cacheLetterPositions();
-      window.addEventListener("resize", cacheLetterPositions);
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(cacheLetterPositions);
-      }
-
-      var pointerActive = false;
-      var pointerX = 0;
-      var pointerY = 0;
-      var ticking = false;
-
-      var applyPointerEffect = function () {
-        ticking = false;
-        letterData.forEach(function (d) {
-          var dx = d.cx - pointerX;
-          var dy = d.cy - pointerY;
-          var dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (pointerActive && dist < RADIUS) {
-            var factor = 1 - dist / RADIUS;
-            var norm = dist === 0 ? 0 : 1 / dist;
-            var pushX = dx * norm * MAX_PUSH * factor + d.jitterX * factor;
-            var pushY = dy * norm * MAX_PUSH * factor + d.jitterY * factor;
-            var rot = d.jitterRot * factor;
-            d.el.style.transform =
-              "translate(" + pushX.toFixed(1) + "px, " + pushY.toFixed(1) + "px) rotate(" + rot.toFixed(1) + "deg)";
-            d.el.style.color = "#D4DC55";
-            d.active = true;
-          } else if (d.active) {
-            d.el.style.transform = "";
-            d.el.style.color = "";
-            d.active = false;
-          }
-        });
-      };
-
-      var requestUpdate = function () {
-        if (!ticking) {
-          ticking = true;
-          requestAnimationFrame(applyPointerEffect);
-        }
-      };
-
-      statement.addEventListener("pointermove", function (event) {
-        var sectionRect = statement.getBoundingClientRect();
-        pointerX = event.clientX - sectionRect.left;
-        pointerY = event.clientY - sectionRect.top;
-        pointerActive = true;
-        requestUpdate();
-      });
-
-      statement.addEventListener("pointerleave", function () {
-        pointerActive = false;
-        requestUpdate();
-      });
-
-      var lastScrollY = window.scrollY;
-
-      var applyScrollSweep = function () {
-        var sectionRect = statement.getBoundingClientRect();
-        var localY = window.innerHeight / 2 - sectionRect.top;
-
-        if (localY >= 0 && localY <= sectionRect.height) {
-          pointerX = sectionRect.width / 2;
-          pointerY = localY;
-          pointerActive = true;
-          requestUpdate();
-        } else if (pointerActive) {
-          pointerActive = false;
-          requestUpdate();
-        }
-      };
-
-      var scrollTicking = false;
-      window.addEventListener(
-        "scroll",
-        function () {
-          lastScrollY = window.scrollY;
-          if (!scrollTicking) {
-            scrollTicking = true;
-            requestAnimationFrame(function () {
-              scrollTicking = false;
-              applyScrollSweep();
-            });
-          }
-        },
-        { passive: true }
-      );
-
-      applyScrollSweep();
-    }
-  }
-
-  // ---- Footer year ----
-  var yearEl = document.querySelector("[data-year]");
-  if (yearEl) {
-    yearEl.textContent = String(new Date().getFullYear());
-  }
-})();
+  <script src="script.js"></script>
+</body>
+</html>
