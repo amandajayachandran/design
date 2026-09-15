@@ -803,6 +803,7 @@ img { max-width: 100%; display: block; }
   flex-direction: column;
   gap: 0;
   border-top: 1px solid var(--line);
+  margin-top: 117px;
 }
 
 .timeline li {
