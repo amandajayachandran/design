@@ -588,6 +588,59 @@ img { max-width: 100%; display: block; }
   color: rgba(241, 243, 239, 0.7);
 }
 
+.mywork-cta-wrap {
+  position: relative;
+}
+
+.mywork-note-cta {
+  cursor: pointer;
+  font: inherit;
+  background: none;
+}
+
+.mywork-cta-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 5;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  background: var(--void);
+  border: 1px solid var(--line-on-void);
+  border-radius: var(--radius);
+}
+
+.mywork-cta-menu[hidden] {
+  display: none;
+}
+
+.mywork-cta-menu a,
+.mywork-cta-menu-disabled {
+  display: block;
+  padding: 0.65rem 1rem;
+  border-radius: calc(var(--radius) - 4px);
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+}
+
+.mywork-cta-menu a {
+  color: var(--paper);
+  transition: background-color 0.2s var(--ease);
+}
+
+.mywork-cta-menu a:hover,
+.mywork-cta-menu a:focus-visible {
+  background: #90BD54;
+}
+
+.mywork-cta-menu-disabled {
+  color: rgba(241, 243, 239, 0.35);
+  cursor: not-allowed;
+}
+
 .mywork-note-alt a {
   color: inherit;
   text-decoration: underline;
