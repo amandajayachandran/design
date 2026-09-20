@@ -10,29 +10,27 @@
 
   // ---- Request-portfolio email: try the default mail app first;
   // if the tab hasn't lost focus shortly after (a sign no app opened),
-  // fall back to showing provider-specific web-compose options. This
-  // is a heuristic -- browsers don't expose true mailto success/failure.
+  // fall back to a centered modal with provider-specific web-compose
+  // options. This is a heuristic -- browsers don't expose true mailto
+  // success/failure. The fallback is a body-level modal (matching the
+  // resume modal's pattern) rather than a dropdown anchored to the
+  // button, since an anchored dropdown gets visually covered by later
+  // sections that establish their own stacking context.
   var ctaBtn = document.getElementById("mywork-cta-btn");
-  var ctaMenu = document.getElementById("mywork-cta-menu");
+  var ctaModal = document.getElementById("mywork-cta-modal");
+  var ctaModalOverlay = document.getElementById("mywork-cta-modal-overlay");
+  var ctaModalClose = document.getElementById("mywork-cta-modal-close");
   var ctaMailto = "mailto:amanda.jayachandran@gmail.com?subject=Request%20To%20See%20My%20Portfolio";
-  if (ctaBtn && ctaMenu) {
-    var closeCtaMenu = function () {
-      ctaMenu.hidden = true;
+  if (ctaBtn && ctaModal) {
+    var closeCtaModal = function () {
+      ctaModal.classList.remove("is-open");
+      ctaModal.setAttribute("aria-hidden", "true");
       ctaBtn.setAttribute("aria-expanded", "false");
     };
-    var openCtaMenu = function () {
-      ctaMenu.hidden = false;
+    var openCtaModal = function () {
+      ctaModal.classList.add("is-open");
+      ctaModal.setAttribute("aria-hidden", "false");
       ctaBtn.setAttribute("aria-expanded", "true");
-
-      // Flip the menu above the button if there isn't enough room
-      // below it in the current viewport, so it's never cut off.
-      ctaMenu.classList.remove("mywork-cta-menu--up");
-      var menuHeight = ctaMenu.offsetHeight;
-      var btnRect = ctaBtn.getBoundingClientRect();
-      var spaceBelow = window.innerHeight - btnRect.bottom;
-      if (spaceBelow < menuHeight + 16) {
-        ctaMenu.classList.add("mywork-cta-menu--up");
-      }
     };
 
     var ctaFallbackTimer = null;
@@ -48,16 +46,7 @@
       if (document.hidden) onCtaBlur();
     };
 
-    ctaBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-
-      // Already showing the fallback menu from a prior failed attempt:
-      // just toggle it instead of re-triggering mailto.
-      if (!ctaMenu.hidden) {
-        closeCtaMenu();
-        return;
-      }
-
+    ctaBtn.addEventListener("click", function () {
       ctaMailAppOpened = false;
       window.addEventListener("blur", onCtaBlur);
       document.addEventListener("visibilitychange", onCtaVisibility);
@@ -67,17 +56,14 @@
       ctaFallbackTimer = setTimeout(function () {
         window.removeEventListener("blur", onCtaBlur);
         document.removeEventListener("visibilitychange", onCtaVisibility);
-        if (!ctaMailAppOpened) openCtaMenu();
+        if (!ctaMailAppOpened) openCtaModal();
       }, 600);
     });
 
-    document.addEventListener("click", function (e) {
-      if (!ctaMenu.hidden && !ctaMenu.contains(e.target) && e.target !== ctaBtn) {
-        closeCtaMenu();
-      }
-    });
+    ctaModalOverlay.addEventListener("click", closeCtaModal);
+    ctaModalClose.addEventListener("click", closeCtaModal);
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") closeCtaMenu();
+      if (e.key === "Escape") closeCtaModal();
     });
   }
 
