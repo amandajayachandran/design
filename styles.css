@@ -592,7 +592,6 @@ img { max-width: 100%; display: block; }
 
 .mywork-note-cta {
   cursor: pointer;
-  font: inherit;
 }
 
 .mywork-cta-modal {
@@ -936,16 +935,18 @@ img { max-width: 100%; display: block; }
 
 .contact-email {
   display: inline-block;
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  border-bottom: 1px solid var(--ink);
-  padding-bottom: 0.15em;
-  transition: opacity 0.2s var(--ease);
+  border: 1px solid #90BD54;
+  border-radius: var(--radius);
+  padding: 0.4rem 0.9rem;
+  background: #90BD54;
+  color: var(--paper);
+  font-size: 0.9rem;
+  transition: background-color 0.2s var(--ease);
 }
 
 .contact-email:hover,
 .contact-email:focus-visible {
-  opacity: 0.6;
+  background: var(--void);
 }
 
 .contact-actions {
@@ -963,9 +964,10 @@ img { max-width: 100%; display: block; }
 
 .contact-logo {
   position: absolute;
-  top: -2.75rem;
-  right: 0;
-  width: clamp(2.25rem, 4vw, 3.5rem);
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2rem;
   height: auto;
 }
 
