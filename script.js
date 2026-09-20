@@ -8,6 +8,69 @@
     "(prefers-reduced-motion: reduce)"
   ).matches;
 
+  // ---- Request-portfolio email: try the default mail app first;
+  // if the tab hasn't lost focus shortly after (a sign no app opened),
+  // fall back to showing provider-specific web-compose options. This
+  // is a heuristic -- browsers don't expose true mailto success/failure.
+  var ctaBtn = document.getElementById("mywork-cta-btn");
+  var ctaMenu = document.getElementById("mywork-cta-menu");
+  var ctaMailto = "mailto:amanda.jayachandran@gmail.com?subject=Request%20To%20See%20My%20Portfolio";
+  if (ctaBtn && ctaMenu) {
+    var closeCtaMenu = function () {
+      ctaMenu.hidden = true;
+      ctaBtn.setAttribute("aria-expanded", "false");
+    };
+    var openCtaMenu = function () {
+      ctaMenu.hidden = false;
+      ctaBtn.setAttribute("aria-expanded", "true");
+    };
+
+    var ctaFallbackTimer = null;
+    var ctaMailAppOpened = false;
+
+    var onCtaBlur = function () {
+      ctaMailAppOpened = true;
+      if (ctaFallbackTimer) clearTimeout(ctaFallbackTimer);
+      window.removeEventListener("blur", onCtaBlur);
+      document.removeEventListener("visibilitychange", onCtaVisibility);
+    };
+    var onCtaVisibility = function () {
+      if (document.hidden) onCtaBlur();
+    };
+
+    ctaBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+
+      // Already showing the fallback menu from a prior failed attempt:
+      // just toggle it instead of re-triggering mailto.
+      if (!ctaMenu.hidden) {
+        closeCtaMenu();
+        return;
+      }
+
+      ctaMailAppOpened = false;
+      window.addEventListener("blur", onCtaBlur);
+      document.addEventListener("visibilitychange", onCtaVisibility);
+
+      window.location.href = ctaMailto;
+
+      ctaFallbackTimer = setTimeout(function () {
+        window.removeEventListener("blur", onCtaBlur);
+        document.removeEventListener("visibilitychange", onCtaVisibility);
+        if (!ctaMailAppOpened) openCtaMenu();
+      }, 600);
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!ctaMenu.hidden && !ctaMenu.contains(e.target) && e.target !== ctaBtn) {
+        closeCtaMenu();
+      }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeCtaMenu();
+    });
+  }
+
   // ---- Resume modal ----
   var resumeTrigger = document.getElementById("resume-trigger");
   var resumeModal = document.getElementById("resume-modal");
