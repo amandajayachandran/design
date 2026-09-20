@@ -209,6 +209,7 @@ img { max-width: 100%; display: block; }
 
 .about-heading-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
 }
@@ -218,14 +219,15 @@ img { max-width: 100%; display: block; }
   border: 1px solid #90BD54;
   border-radius: var(--radius);
   padding: 0.4rem 0.9rem;
-  color: var(--ink);
+  background: #90BD54;
+  color: var(--paper);
   font-size: 0.9rem;
   transition: background-color 0.2s var(--ease);
 }
 
 .nav-resume:hover,
 .nav-resume:focus-visible {
-  background: #90BD54;
+  background: var(--void);
 }
 
 .resume-modal {
@@ -591,7 +593,6 @@ img { max-width: 100%; display: block; }
 .mywork-note-cta {
   cursor: pointer;
   font: inherit;
-  background: none;
 }
 
 .mywork-cta-modal {
@@ -676,20 +677,6 @@ img { max-width: 100%; display: block; }
 .mywork-note p {
   max-width: 46ch;
   color: rgba(241, 243, 239, 0.7);
-}
-
-.mywork-note-cta {
-  flex-shrink: 0;
-  border: 1px solid #90BD54;
-  border-radius: var(--radius);
-  padding: 0.6rem 1.1rem;
-  font-size: 0.9rem;
-  transition: background-color 0.2s var(--ease);
-}
-
-.mywork-note-cta:hover,
-.mywork-note-cta:focus-visible {
-  background: #90BD54;
 }
 
 /* ==========================================================================
