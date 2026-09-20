@@ -23,6 +23,16 @@
     var openCtaMenu = function () {
       ctaMenu.hidden = false;
       ctaBtn.setAttribute("aria-expanded", "true");
+
+      // Flip the menu above the button if there isn't enough room
+      // below it in the current viewport, so it's never cut off.
+      ctaMenu.classList.remove("mywork-cta-menu--up");
+      var menuHeight = ctaMenu.offsetHeight;
+      var btnRect = ctaBtn.getBoundingClientRect();
+      var spaceBelow = window.innerHeight - btnRect.bottom;
+      if (spaceBelow < menuHeight + 16) {
+        ctaMenu.classList.add("mywork-cta-menu--up");
+      }
     };
 
     var ctaFallbackTimer = null;
