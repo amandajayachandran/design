@@ -588,42 +588,54 @@ img { max-width: 100%; display: block; }
   color: rgba(241, 243, 239, 0.7);
 }
 
-.mywork-cta-wrap {
-  position: relative;
-}
-
 .mywork-note-cta {
   cursor: pointer;
   font: inherit;
   background: none;
 }
 
-.mywork-cta-menu {
+.mywork-cta-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+}
+
+.mywork-cta-modal.is-open {
+  display: flex;
+}
+
+.mywork-cta-modal-overlay {
   position: absolute;
-  top: calc(100% + 0.5rem);
-  left: 0;
-  z-index: 5;
-  min-width: 200px;
+  inset: 0;
+  background: rgba(14, 18, 16, 0.75);
+}
+
+.mywork-cta-modal-panel {
+  position: relative;
+  z-index: 1;
+  width: min(320px, 90vw);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  padding: 0.4rem;
+  padding: 2.5rem 0.75rem 0.75rem;
   background: var(--void);
   border: 1px solid var(--line-on-void);
   border-radius: var(--radius);
 }
 
-.mywork-cta-menu--up {
-  top: auto;
-  bottom: calc(100% + 0.5rem);
+.mywork-cta-modal-title {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.9rem;
+  font-size: 0.8rem;
+  color: rgba(241, 243, 239, 0.6);
 }
 
-.mywork-cta-menu[hidden] {
-  display: none;
-}
-
-.mywork-cta-menu a,
-.mywork-cta-menu-disabled {
+.mywork-cta-modal-panel a,
+.mywork-cta-modal-disabled {
   display: block;
   padding: 0.65rem 1rem;
   border-radius: calc(var(--radius) - 4px);
@@ -631,19 +643,29 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.01em;
 }
 
-.mywork-cta-menu a {
+.mywork-cta-modal-panel a {
   color: var(--paper);
   transition: background-color 0.2s var(--ease);
 }
 
-.mywork-cta-menu a:hover,
-.mywork-cta-menu a:focus-visible {
+.mywork-cta-modal-panel a:hover,
+.mywork-cta-modal-panel a:focus-visible {
   background: #90BD54;
 }
 
-.mywork-cta-menu-disabled {
+.mywork-cta-modal-disabled {
   color: rgba(241, 243, 239, 0.35);
   cursor: not-allowed;
+}
+
+.mywork-cta-modal-close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.6rem;
+  z-index: 2;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--paper);
 }
 
 .mywork-note-alt a {
