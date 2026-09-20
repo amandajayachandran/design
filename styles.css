@@ -250,8 +250,8 @@ img { max-width: 100%; display: block; }
 .resume-modal-panel {
   position: relative;
   z-index: 1;
-  width: min(800px, 90vw);
-  height: min(900px, 85vh);
+  width: min(1200px, 96vw);
+  height: min(1200px, 94vh);
   background: var(--paper);
   border-radius: var(--radius);
   overflow: hidden;
@@ -611,6 +611,11 @@ img { max-width: 100%; display: block; }
   background: var(--void);
   border: 1px solid var(--line-on-void);
   border-radius: var(--radius);
+}
+
+.mywork-cta-menu--up {
+  top: auto;
+  bottom: calc(100% + 0.5rem);
 }
 
 .mywork-cta-menu[hidden] {
