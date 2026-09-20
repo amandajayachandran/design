@@ -68,12 +68,19 @@
   }
 
   // ---- Resume modal ----
+  // On mobile, the embedded PDF iframe often only shows page 1 with
+  // no way to scroll further (inconsistent mobile PDF-in-iframe
+  // support, especially iOS Safari). Rather than fight that, mobile
+  // visitors get the PDF's normal href behavior -- opens in a new
+  // tab, in the browser's own full PDF viewer, which scrolls fine.
   var resumeTrigger = document.getElementById("resume-trigger");
   var resumeModal = document.getElementById("resume-modal");
   var resumeOverlay = document.getElementById("resume-modal-overlay");
   var resumeClose = document.getElementById("resume-modal-close");
+  var RESUME_MOBILE_BREAKPOINT = 860;
   if (resumeTrigger && resumeModal) {
     var openResume = function (e) {
+      if (window.innerWidth < RESUME_MOBILE_BREAKPOINT) return; // let the link open normally
       e.preventDefault();
       resumeModal.classList.add("is-open");
       resumeModal.setAttribute("aria-hidden", "false");
@@ -82,6 +89,8 @@
       resumeModal.classList.remove("is-open");
       resumeModal.setAttribute("aria-hidden", "true");
     };
+    resumeTrigger.setAttribute("target", "_blank");
+    resumeTrigger.setAttribute("rel", "noopener");
     resumeTrigger.addEventListener("click", openResume);
     resumeOverlay.addEventListener("click", closeResume);
     resumeClose.addEventListener("click", closeResume);
