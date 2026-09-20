@@ -8,57 +8,70 @@
     "(prefers-reduced-motion: reduce)"
   ).matches;
 
-  // ---- Request-portfolio email: try the default mail app first;
-  // if the tab hasn't lost focus shortly after (a sign no app opened),
-  // fall back to a centered modal with provider-specific web-compose
-  // options. This is a heuristic -- browsers don't expose true mailto
+  // ---- Email triggers: try the default mail app first; if the tab
+  // hasn't lost focus shortly after (a sign no app opened), fall back
+  // to a centered modal with provider-specific web-compose options.
+  // This is a heuristic -- browsers don't expose true mailto
   // success/failure. The fallback is a body-level modal (matching the
-  // resume modal's pattern) rather than a dropdown anchored to the
+  // resume modal's pattern) rather than a dropdown anchored to a
   // button, since an anchored dropdown gets visually covered by later
-  // sections that establish their own stacking context.
-  var ctaBtn = document.getElementById("mywork-cta-btn");
+  // sections that establish their own stacking context. Both the
+  // "Request To See My Portfolio" button and the Contact section
+  // email address share this same modal.
   var ctaModal = document.getElementById("mywork-cta-modal");
   var ctaModalOverlay = document.getElementById("mywork-cta-modal-overlay");
   var ctaModalClose = document.getElementById("mywork-cta-modal-close");
-  var ctaMailto = "mailto:amanda.jayachandran@gmail.com?subject=Request%20To%20See%20My%20Portfolio";
-  if (ctaBtn && ctaModal) {
+
+  if (ctaModal) {
     var closeCtaModal = function () {
       ctaModal.classList.remove("is-open");
       ctaModal.setAttribute("aria-hidden", "true");
-      ctaBtn.setAttribute("aria-expanded", "false");
     };
     var openCtaModal = function () {
       ctaModal.classList.add("is-open");
       ctaModal.setAttribute("aria-hidden", "false");
-      ctaBtn.setAttribute("aria-expanded", "true");
     };
 
-    var ctaFallbackTimer = null;
-    var ctaMailAppOpened = false;
+    var wireEmailTrigger = function (trigger, mailtoHref) {
+      if (!trigger) return;
+      var fallbackTimer = null;
+      var mailAppOpened = false;
 
-    var onCtaBlur = function () {
-      ctaMailAppOpened = true;
-      if (ctaFallbackTimer) clearTimeout(ctaFallbackTimer);
-      window.removeEventListener("blur", onCtaBlur);
-      document.removeEventListener("visibilitychange", onCtaVisibility);
+      var onBlur = function () {
+        mailAppOpened = true;
+        if (fallbackTimer) clearTimeout(fallbackTimer);
+        window.removeEventListener("blur", onBlur);
+        document.removeEventListener("visibilitychange", onVisibility);
+      };
+      var onVisibility = function () {
+        if (document.hidden) onBlur();
+      };
+
+      trigger.addEventListener("click", function (e) {
+        e.preventDefault();
+        trigger.setAttribute("aria-expanded", "true");
+        mailAppOpened = false;
+        window.addEventListener("blur", onBlur);
+        document.addEventListener("visibilitychange", onVisibility);
+
+        window.location.href = mailtoHref;
+
+        fallbackTimer = setTimeout(function () {
+          window.removeEventListener("blur", onBlur);
+          document.removeEventListener("visibilitychange", onVisibility);
+          if (!mailAppOpened) openCtaModal();
+        }, 600);
+      });
     };
-    var onCtaVisibility = function () {
-      if (document.hidden) onCtaBlur();
-    };
 
-    ctaBtn.addEventListener("click", function () {
-      ctaMailAppOpened = false;
-      window.addEventListener("blur", onCtaBlur);
-      document.addEventListener("visibilitychange", onCtaVisibility);
-
-      window.location.href = ctaMailto;
-
-      ctaFallbackTimer = setTimeout(function () {
-        window.removeEventListener("blur", onCtaBlur);
-        document.removeEventListener("visibilitychange", onCtaVisibility);
-        if (!ctaMailAppOpened) openCtaModal();
-      }, 600);
-    });
+    wireEmailTrigger(
+      document.getElementById("mywork-cta-btn"),
+      "mailto:amanda.jayachandran@gmail.com?subject=Request%20To%20See%20My%20Portfolio"
+    );
+    wireEmailTrigger(
+      document.querySelector(".contact-email"),
+      "mailto:amanda.jayachandran@gmail.com"
+    );
 
     ctaModalOverlay.addEventListener("click", closeCtaModal);
     ctaModalClose.addEventListener("click", closeCtaModal);
