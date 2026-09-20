@@ -583,6 +583,16 @@ img { max-width: 100%; display: block; }
   gap: var(--space-2);
 }
 
+.mywork-note-alt {
+  font-size: 0.8rem;
+  color: rgba(241, 243, 239, 0.7);
+}
+
+.mywork-note-alt a {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .mywork-note p {
   max-width: 46ch;
   color: rgba(241, 243, 239, 0.7);
