@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Big+Shoulders+Display:wght@900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="styles.css?v=3" />
 </head>
 <body>
 
@@ -173,18 +173,9 @@
         <p>
           Full case studies and portfolio available upon request.
         </p>
-        <div class="mywork-cta-wrap">
-          <button type="button" class="mywork-note-cta" id="mywork-cta-btn" aria-haspopup="true" aria-expanded="false" aria-controls="mywork-cta-menu">
-            Request To See My Portfolio
-          </button>
-          <div class="mywork-cta-menu" id="mywork-cta-menu" hidden>
-            <a href="https://outlook.office.com/mail/deeplink/compose?to=amanda.jayachandran@gmail.com&amp;subject=Request%20To%20See%20My%20Portfolio" target="_blank" rel="noopener">Outlook</a>
-            <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=amanda.jayachandran@gmail.com&amp;su=Request%20To%20See%20My%20Portfolio" target="_blank" rel="noopener">Gmail</a>
-            <a href="https://compose.mail.yahoo.com/?to=amanda.jayachandran@gmail.com&amp;subject=Request%20To%20See%20My%20Portfolio" target="_blank" rel="noopener">Yahoo</a>
-            <span class="mywork-cta-menu-disabled">AOL</span>
-            <span class="mywork-cta-menu-disabled">CompuServe</span>
-          </div>
-        </div>
+        <button type="button" class="mywork-note-cta" id="mywork-cta-btn" aria-haspopup="true" aria-expanded="false" aria-controls="mywork-cta-modal">
+          Request To See My Portfolio
+        </button>
       </div>
       </div>
     </section>
@@ -256,6 +247,19 @@
     <a href="#top">Back to top</a>
   </footer>
 
+  <div class="mywork-cta-modal" id="mywork-cta-modal" aria-hidden="true">
+    <div class="mywork-cta-modal-overlay" id="mywork-cta-modal-overlay"></div>
+    <div class="mywork-cta-modal-panel" role="dialog" aria-modal="true" aria-label="Choose how to email">
+      <button class="mywork-cta-modal-close" id="mywork-cta-modal-close" aria-label="Close">&times;</button>
+      <p class="mywork-cta-modal-title">Open with:</p>
+      <a href="https://outlook.office.com/mail/deeplink/compose?to=amanda.jayachandran@gmail.com&amp;subject=Request%20To%20See%20My%20Portfolio" target="_blank" rel="noopener">Outlook</a>
+      <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=amanda.jayachandran@gmail.com&amp;su=Request%20To%20See%20My%20Portfolio" target="_blank" rel="noopener">Gmail</a>
+      <a href="https://compose.mail.yahoo.com/?to=amanda.jayachandran@gmail.com&amp;subject=Request%20To%20See%20My%20Portfolio" target="_blank" rel="noopener">Yahoo</a>
+      <span class="mywork-cta-modal-disabled">AOL</span>
+      <span class="mywork-cta-modal-disabled">CompuServe</span>
+    </div>
+  </div>
+
   <div class="resume-modal" id="resume-modal" aria-hidden="true">
     <div class="resume-modal-overlay" id="resume-modal-overlay"></div>
     <div class="resume-modal-panel" role="dialog" aria-modal="true" aria-label="Resume">
@@ -264,6 +268,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=3"></script>
+  <script src="script.js?v=4"></script>
 </body>
 </html>
