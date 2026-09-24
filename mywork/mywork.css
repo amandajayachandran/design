@@ -40,6 +40,35 @@
   align-items: stretch;
 }
 
+.mywork-password-wrap {
+  position: relative;
+  display: flex;
+}
+
+.mywork-password-wrap input {
+  padding-right: 2.75rem;
+}
+
+.mywork-password-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 0;
+  color: rgba(241, 243, 239, 0.6);
+  cursor: pointer;
+}
+
+.mywork-password-toggle:hover,
+.mywork-password-toggle:focus-visible {
+  color: var(--paper);
+}
+
 .mywork-form input {
   flex: 1;
   min-width: 12rem;
