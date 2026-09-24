@@ -35,6 +35,11 @@
   flex-wrap: wrap;
 }
 
+.mywork-form--stacked {
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .mywork-form input {
   flex: 1;
   min-width: 12rem;
@@ -68,6 +73,11 @@
   opacity: 0.85;
 }
 
+.mywork-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .mywork-status {
   margin-top: var(--space-2);
   font-size: 0.9rem;
@@ -75,15 +85,8 @@
   min-height: 1.2em;
 }
 
-.mywork-link-button {
-  margin-top: var(--space-2);
-  background: none;
-  border: 0;
-  color: rgba(241, 243, 239, 0.6);
-  text-decoration: underline;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-family: var(--font-body);
+.mywork-status--error {
+  color: #E07A5F;
 }
 
 .video-wrap {
