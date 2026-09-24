@@ -42,7 +42,7 @@ function getCookie(request, name) {
   return match ? match[1] : null;
 }
 
-export async function GET(request) {
+export async function POST(request) {
   const cookie = getCookie(request, "portfolio_session");
   if (!cookie || !cookie.includes(".")) {
     return new Response(JSON.stringify({ error: "Not authenticated." }), { status: 401 });
