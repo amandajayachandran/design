@@ -15,36 +15,21 @@
 
   <main class="mywork-gate">
 
-    <section class="mywork-step" data-step="email" id="step-email">
-      <p class="section-kicker section-kicker--void">Private </p>
-      <h1>Request access</h1>
+    <section class="mywork-step" data-step="gate" id="step-gate">
+      <p class="section-kicker section-kicker--void">Private</p>
+      <h1>Enter password</h1>
       <p class="mywork-copy">
-        Enter the email address this page was shared with in order to
-        gain access. If it's approved, a one-time access code will be
-        sent to that inbox.
+        This page was shared with you directly. Enter your email and
+        the password you were given to view Amanda's work.
       </p>
-      <form id="request-form" class="mywork-form">
+      <form id="gate-form" class="mywork-form mywork-form--stacked">
         <label for="email-input" class="sr-only">Email address</label>
         <input type="email" id="email-input" placeholder="you@company.com" required autocomplete="email" />
-        <button type="submit" class="mywork-button">Send code</button>
-      </form>
-      <p class="mywork-status" id="request-status" role="status" aria-live="polite"></p>
-    </section>
-
-    <section class="mywork-step" data-step="code" id="step-code" hidden>
-      <p class="section-kicker section-kicker--void">Check your inbox</p>
-      <h1>Enter your code</h1>
-      <p class="mywork-copy">
-        Enter the one-time code just sent to your email. It expires in
-        15 minutes and can only be used once.
-      </p>
-      <form id="verify-form" class="mywork-form">
-        <label for="code-input" class="sr-only">One-time code</label>
-        <input type="text" id="code-input" placeholder="ABCD1234" maxlength="8" required autocomplete="one-time-code" />
+        <label for="password-input" class="sr-only">Password</label>
+        <input type="password" id="password-input" placeholder="Password" required autocomplete="current-password" />
         <button type="submit" class="mywork-button">View Amanda's Work</button>
       </form>
-      <p class="mywork-status" id="verify-status" role="status" aria-live="polite"></p>
-      <button type="button" class="mywork-link-button" id="request-new-code">Request a new code</button>
+      <p class="mywork-status" id="gate-status" role="status" aria-live="polite"></p>
     </section>
 
     <section class="mywork-step" data-step="video" id="step-video" hidden>
@@ -62,8 +47,8 @@
         <div class="video-watermark" id="video-watermark" aria-hidden="true"></div>
       </div>
       <p class="mywork-copy mywork-note-small">
-        This view is single-use and tied to your email. Refreshing or
-        returning later will require a new one-time code.
+        This view is logged and tied to your email. Refreshing or
+        returning later will require entering the password again.
       </p>
     </section>
 
