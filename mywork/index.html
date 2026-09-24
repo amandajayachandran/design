@@ -26,7 +26,21 @@
         <label for="email-input" class="sr-only">Email address</label>
         <input type="email" id="email-input" placeholder="you@company.com" required autocomplete="email" />
         <label for="password-input" class="sr-only">Password</label>
-        <input type="password" id="password-input" placeholder="Password" required autocomplete="current-password" />
+        <div class="mywork-password-wrap">
+          <input type="password" id="password-input" placeholder="Password" required autocomplete="current-password" />
+          <button type="button" class="mywork-password-toggle" id="password-toggle" aria-label="Show password" aria-pressed="false">
+            <svg id="eye-open" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg id="eye-closed" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" hidden>
+              <path d="M3 3l18 18"/>
+              <path d="M10.6 5.2C11 5.1 11.5 5 12 5c7 0 10.5 7 10.5 7-.6 1.2-1.6 2.7-3 4"/>
+              <path d="M6.6 6.6C3.7 8.4 1.5 12 1.5 12s3.5 7 10.5 7c1.5 0 2.9-.3 4.1-.9"/>
+              <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>
+            </svg>
+          </button>
+        </div>
         <button type="submit" class="mywork-button">View Amanda's Work</button>
       </form>
       <p class="mywork-status" id="gate-status" role="status" aria-live="polite"></p>
