@@ -1,14 +1,20 @@
 // /api/verify-access.js
 //
-// Validates a one-time password. On success it burns the code (single
-// use, enforced atomically via Redis GETDEL) and issues a short-lived
-// signed session cookie, used only to fetch the video URL from
-// /api/video-url. Nothing about the video itself lives here.
+// Validates the shared portfolio password. Every attempt -- success,
+// failure, or rate-limited -- is logged to Redis with email, IP,
+// user-agent, and timestamp for accountability, since a shared
+// password (unlike the old per-person OTP) doesn't verify the visitor
+// actually controls the email address they typed in.
+//
+// On success, issues the same short-lived signed session cookie that
+// /api/video-url.js already expects -- that file is unchanged.
 //
 // Required environment variables:
 //   KV_REST_API_URL
 //   KV_REST_API_TOKEN
-//   SESSION_SECRET      any long random string you generate once
+//   SESSION_SECRET         same value already used by video-url.js
+//   MYWORK_PASSWORD_HASH   format: "iterations:saltHex:hashHex"
+//                          (PBKDF2-SHA256; see generation note below)
 
 async function redis(...args) {
   const res = await fetch(process.env.KV_REST_API_URL, {
@@ -22,14 +28,6 @@ async function redis(...args) {
   const data = await res.json();
   if (data.error) throw new Error(data.error);
   return data.result;
-}
-
-async function sha256(text) {
-  const data = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
 }
 
 async function hmac(payload) {
@@ -54,67 +52,109 @@ function base64url(str) {
     .replace(/=+$/, "");
 }
 
+function hexToBytes(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+  }
+  return bytes;
+}
+
+function timingSafeEqual(a, b) {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+// Verifies a password against a stored "iterations:saltHex:hashHex"
+// string using PBKDF2-SHA256 -- chosen because it's built into Web
+// Crypto (crypto.subtle), which this project's other routes already
+// rely on; bcrypt is not available in this runtime without adding a
+// native/npm dependency.
+async function verifyPassword(password, stored) {
+  if (!stored) return false;
+  const [iterationsStr, saltHex, hashHex] = stored.split(":");
+  const iterations = Number(iterationsStr);
+  if (!iterations || !saltHex || !hashHex) return false;
+
+  const salt = hexToBytes(saltHex);
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits"]
+  );
+  const derivedBits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", salt, iterations, hash: "SHA-256" },
+    keyMaterial,
+    256
+  );
+  const computedHex = Array.from(new Uint8Array(derivedBits))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  return timingSafeEqual(computedHex, hashHex);
+}
+
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_SECONDS = 15 * 60;
+
 export async function POST(request) {
-  let email, code;
+  let email, password;
   try {
     const body = await request.json();
     email = String(body.email || "").trim().toLowerCase();
-    code = String(body.code || "").trim().toUpperCase();
+    password = String(body.password || "");
   } catch {
-    return new Response(JSON.stringify({ error: "Invalid request" }), { status: 400 });
+    return new Response(JSON.stringify({ error: "Invalid request." }), { status: 400 });
   }
 
-  if (!email || !code) {
-    return new Response(JSON.stringify({ error: "Email and code are required." }), { status: 400 });
+  if (!email || !password) {
+    return new Response(
+      JSON.stringify({ error: "Email and password are required." }),
+      { status: 400 }
+    );
   }
 
-  // Rate limit verification attempts separately from requests, to slow
-  // down brute-forcing a valid code for a known email.
-  const rlKey = `portfolio:rl:verify:${email}`;
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+  const userAgent = request.headers.get("user-agent") || "unknown";
+
+  // Rate limit by IP -- a shared password means limiting by email alone
+  // would do nothing, since anyone can type any email.
+  const rlKey = `portfolio:ratelimit:${ip}`;
   const attempts = await redis("INCR", rlKey);
   if (attempts === 1) {
-    await redis("EXPIRE", rlKey, "900");
+    await redis("EXPIRE", rlKey, String(RATE_LIMIT_WINDOW_SECONDS));
   }
-  if (attempts > 8) {
-    return new Response(JSON.stringify({ error: "Too many attempts. Request a new code." }), { status: 429 });
-  }
-
-  // GETDEL: fetch and delete in one atomic step, so two near-simultaneous
-  // requests can never both succeed against the same code.
-  const storedHash = await redis("GETDEL", `portfolio:otp:${email}`);
-
-  if (!storedHash) {
-    await redis(
-      "LPUSH",
-      "portfolio:accesslog",
-      JSON.stringify({ email, event: "verify_failed_expired", at: new Date().toISOString() })
+  if (attempts > RATE_LIMIT_MAX) {
+    await logAttempt({ email, ip, userAgent, result: "rate_limited" });
+    return new Response(
+      JSON.stringify({ error: "Too many attempts. Please try again in 15 minutes." }),
+      { status: 429 }
     );
-    return new Response(JSON.stringify({ error: "That code has expired or was already used. Request a new one." }), { status: 401 });
   }
 
-  const providedHash = await sha256(code);
+  const valid = await verifyPassword(password, process.env.MYWORK_PASSWORD_HASH);
 
-  if (providedHash !== storedHash) {
-    await redis(
-      "LPUSH",
-      "portfolio:accesslog",
-      JSON.stringify({ email, event: "verify_failed_wrong_code", at: new Date().toISOString() })
+  await logAttempt({ email, ip, userAgent, result: valid ? "success" : "failure" });
+
+  if (!valid) {
+    return new Response(
+      JSON.stringify({ error: "Incorrect password. Please try again." }),
+      { status: 401 }
     );
-    return new Response(JSON.stringify({ error: "Incorrect code." }), { status: 401 });
   }
 
-  // Success -- issue a short-lived signed session (10 minutes), just
-  // long enough to load the portfolio and start the video once.
+  // Same session shape/cookie name/lifetime video-url.js already expects.
   const exp = Date.now() + 10 * 60 * 1000;
   const payload = `${email}|${exp}`;
   const signature = await hmac(payload);
   const token = `${base64url(payload)}.${signature}`;
-
-  await redis(
-    "LPUSH",
-    "portfolio:accesslog",
-    JSON.stringify({ email, event: "verified", at: new Date().toISOString() })
-  );
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
@@ -123,4 +163,20 @@ export async function POST(request) {
       "Set-Cookie": `portfolio_session=${token}; Path=/; Max-Age=600; HttpOnly; Secure; SameSite=Strict`,
     },
   });
+}
+
+async function logAttempt({ email, ip, userAgent, result }) {
+  const entry = JSON.stringify({
+    timestamp: new Date().toISOString(),
+    email,
+    ip,
+    userAgent,
+    result,
+  });
+  try {
+    await redis("LPUSH", "portfolio:access_log", entry);
+    await redis("LTRIM", "portfolio:access_log", "0", "999");
+  } catch {
+    // Never let logging failures block or reveal anything to the client.
+  }
 }
