@@ -15,6 +15,21 @@
 
   var currentEmail = "";
 
+  var passwordInput = document.getElementById("password-input");
+  var passwordToggle = document.getElementById("password-toggle");
+  var eyeOpen = document.getElementById("eye-open");
+  var eyeClosed = document.getElementById("eye-closed");
+
+  passwordToggle.addEventListener("click", function () {
+    var showing = passwordInput.type === "text";
+    passwordInput.type = showing ? "password" : "text";
+    eyeOpen.hidden = showing;
+    eyeClosed.hidden = !showing;
+    passwordToggle.setAttribute("aria-pressed", String(!showing));
+    passwordToggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    passwordInput.focus();
+  });
+
   function showStep(step) {
     [stepGate, stepVideo].forEach(function (el) {
       el.hidden = el !== step;
