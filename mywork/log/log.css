@@ -1,0 +1,196 @@
+:root {
+  --log-bg: #0E1210;
+  --log-panel: #171B19;
+  --log-border: #2A2F2C;
+  --log-text: #F4F2ED;
+  --log-muted: #9A9D98;
+  --log-accent: #C9A227;
+  --log-success: #6FA57A;
+  --log-fail: #E07A5F;
+  --log-warn: #D9A441;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--log-bg);
+  color: var(--log-text);
+  font-family: "Inter", -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+.log-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 64px 24px 80px;
+}
+
+h1 {
+  font-family: "Fraunces", serif;
+  font-weight: 450;
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 0 0 8px;
+}
+
+.log-sub {
+  color: var(--log-muted);
+  font-size: 14px;
+  margin: 0 0 32px;
+}
+
+.log-step#step-gate {
+  max-width: 400px;
+  margin: 80px auto;
+  text-align: center;
+}
+
+.log-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.log-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--log-muted);
+}
+
+.log-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.log-field input {
+  width: 100%;
+  padding: 12px 44px 12px 14px;
+  background: var(--log-panel);
+  border: 1px solid var(--log-border);
+  border-radius: 6px;
+  color: var(--log-text);
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.log-field input:focus {
+  outline: none;
+  border-color: var(--log-accent);
+}
+
+.log-password-toggle {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--log-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+}
+
+.log-password-toggle:hover { color: var(--log-text); }
+
+.log-button {
+  padding: 12px 20px;
+  background: var(--log-accent);
+  color: #12140F;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.log-button:hover { opacity: 0.9; }
+.log-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.log-button--ghost {
+  background: transparent;
+  border: 1px solid var(--log-border);
+  color: var(--log-text);
+}
+
+.log-status {
+  min-height: 18px;
+  font-size: 13px;
+  margin: 0;
+}
+
+.log-status--error { color: var(--log-fail); }
+
+.log-table-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.log-table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--log-border);
+  border-radius: 8px;
+}
+
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 720px;
+}
+
+.log-table th {
+  text-align: left;
+  padding: 12px 14px;
+  background: var(--log-panel);
+  color: var(--log-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--log-border);
+  white-space: nowrap;
+}
+
+.log-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--log-border);
+  vertical-align: top;
+}
+
+.log-table tr:last-child td { border-bottom: none; }
+
+.log-ua {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--log-muted);
+}
+
+.log-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.log-badge--success { background: rgba(111, 165, 122, 0.15); color: var(--log-success); }
+.log-badge--fail { background: rgba(224, 122, 95, 0.15); color: var(--log-fail); }
+.log-badge--warn { background: rgba(217, 164, 65, 0.15); color: var(--log-warn); }
+
+.log-empty {
+  color: var(--log-muted);
+  font-size: 14px;
+  padding: 24px 0;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .log-wrap { padding: 40px 16px 60px; }
+}
