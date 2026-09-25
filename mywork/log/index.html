@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Access Log — Amanda Jayachandran</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="log.css?v=1" />
+</head>
+<body>
+
+  <main class="log-wrap">
+
+    <!-- ============ GATE ============ -->
+    <section class="log-step" id="step-gate">
+      <h1>Access Log</h1>
+      <p class="log-sub">Admin only. Enter the admin password to view portfolio access history.</p>
+
+      <form class="log-form" id="gate-form" autocomplete="off">
+        <label class="log-field">
+          <span>Password</span>
+          <div class="log-password-wrap">
+            <input type="password" id="admin-password" name="password" required autocomplete="current-password" />
+            <button type="button" class="log-password-toggle" id="password-toggle" aria-label="Show password">
+              <svg id="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg id="eye-closed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" hidden><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </label>
+
+        <button type="submit" class="log-button" id="gate-submit">View Log</button>
+        <p class="log-status" id="gate-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- ============ TABLE ============ -->
+    <section class="log-step" id="step-table" hidden>
+      <div class="log-table-head">
+        <h1>Access Log</h1>
+        <div class="log-table-actions">
+          <button type="button" class="log-button log-button--ghost" id="refresh-btn">Refresh</button>
+        </div>
+      </div>
+      <p class="log-sub" id="table-meta"></p>
+
+      <div class="log-table-scroll">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Timestamp (UTC)</th>
+              <th>Email</th>
+              <th>IP Address</th>
+              <th>Result</th>
+              <th>User Agent</th>
+            </tr>
+          </thead>
+          <tbody id="log-rows"></tbody>
+        </table>
+      </div>
+      <p class="log-empty" id="log-empty" hidden>No access attempts logged yet.</p>
+    </section>
+
+  </main>
+
+  <script src="log.js?v=1"></script>
+</body>
+</html>
