@@ -31,10 +31,7 @@
   <link rel="stylesheet" href="styles.css?v=4" />
   <link rel="stylesheet" href="/extras.css?v=1" />
 
-<link rel="icon" type="image/png" href="/images/logo-mark.png" />
-<link rel="apple-touch-icon" href="/images/logo-mark.png" />
-
-<link rel="preload" as="image" href="/images/amanda-headshot.jpg" fetchpriority="high" fetchpriority="high" decoding="async"/>
+  <link rel="preload" as="image" href="images/amanda-headshot.jpg" fetchpriority="high" />
 
 <script type="application/ld+json">
 {
@@ -101,7 +98,7 @@
             <span class="hero-word">Director</span>
           </h1>
           <div class="hero-photo">
-            <img src="images/amanda-headshot.jpg" alt="Amanda Jayachandran" />
+            <img src="images/amanda-headshot.jpg" alt="Amanda Jayachandran" fetchpriority="high" decoding="async" />
           </div>
           <p class="hero-tagline">Building brands through immersive experiences</p>
         </div>
@@ -305,9 +302,7 @@
       <div class="contact-actions">
         <div class="contact-email-wrap">
           <img src="images/logo-mark.png" alt="" class="contact-logo"  loading="lazy" decoding="async"/>
-         <button type="button" class="contact-email" data-email-modal>Email Me</button>
-            amanda.jayachandran@gmail.com
-          </a>
+          <button type="button" class="contact-email" data-email-modal>Email Me</button>
         </div>
         <a class="social-button" href="https://www.linkedin.com/in/ajayachandran/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </div>
@@ -340,6 +335,7 @@
     </div>
   </div>
 
+  <script src="script.js?v=4"></script>
   <script src="/extras.js?v=1" defer></script>
 </body>
 </html>
