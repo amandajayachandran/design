@@ -39,6 +39,7 @@ h1 {
   margin: 0 0 32px;
 }
 
+/* ---- Gate form ---- */
 .log-step#step-gate {
   max-width: 400px;
   margin: 80px auto;
@@ -124,6 +125,7 @@ h1 {
 
 .log-status--error { color: var(--log-fail); }
 
+/* ---- Table view ---- */
 .log-table-head {
   display: flex;
   justify-content: space-between;
@@ -177,12 +179,13 @@ h1 {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-  text-transform: capitalize;
+  white-space: nowrap;
 }
 
 .log-badge--success { background: rgba(111, 165, 122, 0.15); color: var(--log-success); }
 .log-badge--fail { background: rgba(224, 122, 95, 0.15); color: var(--log-fail); }
 .log-badge--warn { background: rgba(217, 164, 65, 0.15); color: var(--log-warn); }
+.log-badge--info { background: rgba(244, 242, 237, 0.08); color: var(--log-text); }
 
 .log-empty {
   color: var(--log-muted);
