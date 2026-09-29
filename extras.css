@@ -312,25 +312,73 @@ html.email-modal-lock { overflow: hidden; }
 .video-actions-btn:focus-visible { opacity: 0.8; }
 
 /* ---------- Contact: logo framing Email Me + LinkedIn ---------- */
-.contact-actions {
-  display: grid;
-  grid-template-columns: max-content auto;
-  grid-template-rows: auto auto;
-  column-gap: clamp(1.75rem, 5vw, 3.5rem);
-  row-gap: var(--space-3, 1.75rem);
-  justify-content: start;
-  align-items: start;
+/* Wrapped in @supports so very old browsers keep the original layout
+   instead of showing an oversized logo. */
+@supports (aspect-ratio: 1) and (contain: size) {
+  .contact-actions {
+    display: grid;
+    grid-template-columns: max-content auto;
+    grid-template-rows: auto auto;
+    column-gap: clamp(1.75rem, 5vw, 3.5rem);
+    row-gap: var(--space-3, 1.75rem);
+    justify-content: start;
+    align-items: start;
+  }
+  .contact-email-wrap { display: contents; }
+  .contact-actions .contact-email { grid-column: 1; grid-row: 1; justify-self: start; }
+  .contact-actions .social-button { grid-column: 1; grid-row: 2; justify-self: start; }
+  .contact-actions .contact-logo {
+    position: static;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: stretch;
+    width: auto;
+    height: auto;
+    aspect-ratio: 300 / 344;
+    contain: size;
+  }
 }
-.contact-email-wrap { display: contents; }
-.contact-actions .contact-email { grid-column: 1; grid-row: 1; justify-self: start; }
-.contact-actions .social-button { grid-column: 1; grid-row: 2; justify-self: start; }
-.contact-actions .contact-logo {
-  position: static;
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: stretch;
-  width: auto;
-  height: auto;
-  aspect-ratio: 300 / 344;
-  contain: size;
+
+/* ==========================================================================
+   Mobile / touch polish
+   ========================================================================== */
+
+/* Nav jumps: keep section headings clear of the fixed header */
+section[id] { scroll-margin-top: 4.5rem; }
+
+/* Very small phones (320px, incl. iPhone "Display Zoom"): keep
+   CREATIVE / DIRECTOR on one line each */
+@media (max-width: 359px) {
+  .hero-massive { font-size: 13.5vw; }
+}
+
+/* Email modal: size to the visible screen on iOS/Android (address bar,
+   keyboard), and keep the Send button reachable on short phones */
+.email-modal { top: 0; right: 0; bottom: 0; left: 0; }
+.email-modal-panel { max-height: calc(100dvh - 2rem); overscroll-behavior: contain; }
+@media (max-height: 720px) {
+  .email-modal-panel { padding-top: 1.75rem; padding-bottom: 1.5rem; }
+  .email-modal-sub { margin-bottom: 1rem; }
+  .email-field textarea { min-height: 5.5rem; height: 5.5rem; }
+}
+
+/* Touch targets: at least 44px tall, without moving anything visually */
+@media (max-width: 860px), (pointer: coarse) {
+  .nav-toggle {
+    box-sizing: content-box;
+    padding: 6px;
+    margin: -6px;
+  }
+  .mark-logo-link { padding: 0.8rem 0.9rem; margin: -0.8rem -0.9rem; }
+  .mark-text { padding: 0.8rem 0; margin: -0.8rem 0; }
+  .nav.is-open { gap: 0; }
+  .nav.is-open a { padding: 0.7rem 0; }
+  .nav-resume { min-height: 44px; padding: 0.7rem 1rem; }
+  button.contact-email {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: flex-end;
+  }
+  .email-modal-close { width: 44px; height: 44px; top: 0.35rem; right: 0.45rem; }
+  .site-footer a { display: inline-block; padding: 0.8rem 0; margin: -0.8rem 0; }
 }
