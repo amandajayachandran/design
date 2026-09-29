@@ -29,6 +29,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Big+Shoulders+Display:wght@900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="/extras.css?v=1" />
+
+<link rel="icon" type="image/png" href="/images/logo-mark.png" />
+<link rel="apple-touch-icon" href="/images/logo-mark.png" />
+
+<link rel="preload" as="image" href="/images/amanda-headshot.jpg" fetchpriority="high" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Amanda Jayachandran",
+  "url": "https://amandacreate.com/",
+  "image": "https://amandacreate.com/images/amanda-headshot.jpg",
+  "jobTitle": "Creative & Content Director",
+  "description": "Creative and content director, advisor and consultant. 100+ industry awards, including Stevie Awards from the International Business Awards.",
+  "worksFor": { "@type": "Organization", "name": "Lionbridge Technologies" },
+  "alumniOf": { "@type": "CollegeOrUniversity", "name": "The George Washington University" },
+  "knowsAbout": [
+    "Creative direction",
+    "Content strategy",
+    "Brand voice",
+    "Campaign development",
+    "Creative team leadership",
+    "Content for AI-driven platforms"
+  ],
+  "award": [
+    "Gold Stevie Award, Branded Content Campaign of the Year, 2025 International Business Awards",
+    "Bronze Stevie Award, Branded Content Campaign of the Year, 2026 International Business Awards",
+    "Bronze Stevie Award, Branded Content Campaign of the Year, 2024 International Business Awards",
+    "Silver Stevie Award, New Product Introduction of the Year, 2023 International Business Awards",
+    "Gold Stevie Award, Brand Renovation, 2022 International Business Awards"
+  ],
+  "sameAs": ["https://www.linkedin.com/in/ajayachandran/"]
+}
+</script>
 </head>
 <body>
 
@@ -153,7 +189,34 @@
         </ol>
       </div>
     </section>
-
+<section class="award-strip" aria-label="Award programs">
+  <p class="award-strip-label">Recognized by</p>
+  <div class="award-strip-viewport">
+    <div class="award-strip-track">
+      <ul class="award-strip-list">
+        <li>Stevie Awards</li>
+        <li>Communicator Awards</li>
+        <li>Telly Awards</li>
+        <li>W3 Awards</li>
+        <li>dotCOMM Awards</li>
+        <li>AVA Digital Awards</li>
+        <li>Summit Creative Awards</li>
+        <li>PRSA</li>
+      </ul>
+      <!-- Exact copy so the scroll loops seamlessly. Hidden from screen readers. -->
+      <ul class="award-strip-list" aria-hidden="true">
+        <li>Stevie Awards</li>
+        <li>Communicator Awards</li>
+        <li>Telly Awards</li>
+        <li>W3 Awards</li>
+        <li>dotCOMM Awards</li>
+        <li>AVA Digital Awards</li>
+        <li>Summit Creative Awards</li>
+        <li>PRSA</li>
+      </ul>
+    </div>
+  </div>
+</section>
     <!-- ============ ADVISORY FOCUS ============ -->
     <section class="focus" id="focus">
       <div class="focus-inner">
@@ -242,7 +305,7 @@
       <div class="contact-actions">
         <div class="contact-email-wrap">
           <img src="images/logo-mark.png" alt="" class="contact-logo" />
-          <a class="contact-email" href="mailto:amanda.jayachandran@gmail.com">
+         <button type="button" class="contact-email" data-email-modal>Email Me</button>
             amanda.jayachandran@gmail.com
           </a>
         </div>
