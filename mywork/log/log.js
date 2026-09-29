@@ -36,12 +36,24 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
+const RESULT_LABELS = {
+  success: "Password OK",
+  failure: "Wrong password",
+  rate_limited: "Locked out",
+  video_play: "Started video",
+  video_halfway: "Watched halfway",
+  video_complete: "Finished video",
+  resume_click: "Opened résumé",
+};
+
 function resultBadge(result) {
   const cls =
     result === "success" ? "log-badge log-badge--success" :
     result === "rate_limited" ? "log-badge log-badge--warn" :
-    "log-badge log-badge--fail";
-  return `<span class="${cls}">${escapeHtml(result)}</span>`;
+    result === "failure" ? "log-badge log-badge--fail" :
+    "log-badge log-badge--info";
+  const label = RESULT_LABELS[result] || result;
+  return `<span class="${cls}">${escapeHtml(label)}</span>`;
 }
 
 function renderRows(entries) {
@@ -70,6 +82,7 @@ async function loadLog() {
   try {
     const res = await fetch("/api/mywork-log", { method: "GET" });
     if (res.status === 401) {
+      // Session expired -- send back to the gate.
       stepTable.hidden = true;
       stepGate.hidden = false;
       gateStatus.textContent = "Session expired. Enter the password again.";
@@ -80,7 +93,7 @@ async function loadLog() {
     const data = await res.json();
     renderRows(data.entries || []);
     const count = (data.entries || []).length;
-    tableMeta.textContent = `${count} attempt${count === 1 ? "" : "s"} logged (most recent first).`;
+    tableMeta.textContent = `${count} entr${count === 1 ? "y" : "ies"} logged (most recent first).`;
   } catch (err) {
     tableMeta.textContent = "Couldn't load the log. Try refreshing.";
   }
