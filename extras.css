@@ -310,3 +310,27 @@ html.email-modal-lock { overflow: hidden; }
 
 .video-actions-btn:hover,
 .video-actions-btn:focus-visible { opacity: 0.8; }
+
+/* ---------- Contact: logo framing Email Me + LinkedIn ---------- */
+.contact-actions {
+  display: grid;
+  grid-template-columns: max-content auto;
+  grid-template-rows: auto auto;
+  column-gap: clamp(1.75rem, 5vw, 3.5rem);
+  row-gap: var(--space-3, 1.75rem);
+  justify-content: start;
+  align-items: start;
+}
+.contact-email-wrap { display: contents; }
+.contact-actions .contact-email { grid-column: 1; grid-row: 1; justify-self: start; }
+.contact-actions .social-button { grid-column: 1; grid-row: 2; justify-self: start; }
+.contact-actions .contact-logo {
+  position: static;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: stretch;
+  width: auto;
+  height: auto;
+  aspect-ratio: 300 / 344;
+  contain: size;
+}
