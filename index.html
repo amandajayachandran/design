@@ -34,7 +34,7 @@
 <link rel="icon" type="image/png" href="/images/logo-mark.png" />
 <link rel="apple-touch-icon" href="/images/logo-mark.png" />
 
-<link rel="preload" as="image" href="/images/amanda-headshot.jpg" fetchpriority="high" />
+<link rel="preload" as="image" href="/images/amanda-headshot.jpg" fetchpriority="high" fetchpriority="high" decoding="async"/>
 
 <script type="application/ld+json">
 {
@@ -304,7 +304,7 @@
       </p>
       <div class="contact-actions">
         <div class="contact-email-wrap">
-          <img src="images/logo-mark.png" alt="" class="contact-logo" />
+          <img src="images/logo-mark.png" alt="" class="contact-logo"  loading="lazy" decoding="async"/>
          <button type="button" class="contact-email" data-email-modal>Email Me</button>
             amanda.jayachandran@gmail.com
           </a>
@@ -336,10 +336,10 @@
     <div class="resume-modal-overlay" id="resume-modal-overlay"></div>
     <div class="resume-modal-panel" role="dialog" aria-modal="true" aria-label="Resume">
       <button class="resume-modal-close" id="resume-modal-close" aria-label="Close">&times;</button>
-      <iframe src="images/Amanda-Jayachandran-Resume.pdf#view=FitH" title="Resume"></iframe>
+      <iframe data-src="images/Amanda-Jayachandran-Resume.pdf#view=FitH" title="Resume"></iframe>
     </div>
   </div>
 
-  <script src="script.js?v=5"></script>
+  <script src="/extras.js?v=1" defer></script>
 </body>
 </html>
