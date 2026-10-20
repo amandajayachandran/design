@@ -13,9 +13,17 @@
   <link rel="stylesheet" href="/extras.css?v=2" />
   <link rel="icon" type="image/png" href="/images/logo-mark.png" />
   <link rel="apple-touch-icon" href="/images/logo-mark.png" />
+  <link rel="stylesheet" href="/mywork/flipbook.css?v=1" />
   <style>
-    .mywork-step h1.mywork-title { margin-bottom: 0.35rem; }
+    /* Once the password is accepted, start the content near the top */
+    .mywork-body:has(#step-video:not([hidden])) {
+      align-items: flex-start;
+      padding-top: clamp(1.5rem, 6vh, 3.5rem);
+    }
+    .mywork-step h1.mywork-title { margin: 0 0 1rem; }
+    .mywork-top-actions { margin: 0 0 var(--space-4); }
     .mywork-subtitle { display: block; margin-bottom: var(--space-3); }
+    .mywork-samples-title { margin-top: var(--space-4); margin-bottom: 0; }
   </style>
 </head>
 <body class="mywork-body">
@@ -55,6 +63,10 @@
 
     <section class="mywork-step" data-step="video" id="step-video" hidden>
       <h1 class="mywork-title">Amanda Jayachandran</h1>
+      <div class="video-actions is-visible mywork-top-actions">
+        <a class="video-actions-btn video-actions-btn--primary" href="/images/Amanda-Jayachandran-Resume.pdf" target="_blank" rel="noopener" data-video-resume>View R&eacute;sum&eacute;</a>
+        <button type="button" class="video-actions-btn" data-email-modal data-subject="Following up on your portfolio">Contact Amanda</button>
+      </div>
       <p class="section-kicker section-kicker--void mywork-subtitle">PORTFOLIO HIGHLIGHT</p>
       <div class="video-wrap">
         <video
@@ -68,14 +80,21 @@
         <div class="video-watermark" id="video-watermark" aria-hidden="true"></div>
       </div>
       <p class="mywork-copy mywork-note-small">
-        This view is logged and tied to your email. Refreshing or
-        returning later will require entering the password again.
+        This view is logged and tied to your email.<br />
+        Refreshing or returning later will require entering the password again.
       </p>
+
+      <p class="section-kicker section-kicker--void mywork-subtitle mywork-samples-title">ADDITIONAL PORTFOLIO SAMPLES</p>
+      <div class="flipbook-wrap" id="flipbook-wrap">
+        <p class="flipbook-status" role="status" aria-live="polite"></p>
+      </div>
     </section>
 
   </main>
 
   <script src="/mywork/mywork.js?v=2"></script>
-  <script src="/extras.js?v=1" defer></script>
+  <script src="/extras.js?v=2" defer></script>
+  <script src="/mywork/vendor/page-flip.browser.js" defer></script>
+  <script src="/mywork/flipbook.js?v=1" defer></script>
 </body>
 </html>

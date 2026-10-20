@@ -1,0 +1,139 @@
+/* /mywork/flipbook.css — "Additional Portfolio Samples" page-flip book.
+   Book styling follows the original portfolio book (white pages, warm grey
+   rule, lime/green A mark); controls follow the dark /mywork page. */
+
+/* Let the book use more width than the narrow video column */
+.flipbook-wrap {
+  --fb-w: min(1100px, calc(100vw - 2 * var(--space-3, 1.75rem)));
+  width: var(--fb-w);
+  margin-left: calc((100% - var(--fb-w)) / 2);
+  margin-top: var(--space-2, 1rem);
+  margin-bottom: var(--space-4, 3rem);
+}
+
+.flipbook-status {
+  margin: 0;
+  padding: 2.5rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(241, 243, 239, 0.6);
+}
+
+.flipbook-stage {
+  /* Two-page spread shape (2 x 792 by 612); single page on phones below */
+  aspect-ratio: 1584 / 612;
+  max-height: 78vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.flipbook-book { margin: 0 auto; }
+
+.fb-page {
+  background: #fff;
+  color: #3b3d3a;
+  overflow: hidden;
+}
+
+.fb-page img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+/* Cover, closing page and back cover */
+.fb-page > .fb-in {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  overflow: hidden;
+  font-family: "Jost", "Avenir Next", "Segoe UI", var(--font-body, system-ui), sans-serif;
+}
+
+.fb-cover .fb-rule, .fb-end .fb-rule {
+  position: absolute; left: 4.5cqw; right: 4.5cqw; top: 6cqh; height: 0.9cqh; background: #e3ded3;
+}
+.fb-cover .fb-rule::after, .fb-end .fb-rule::after {
+  content: ""; position: absolute; left: 15cqw; top: 100%;
+  border-left: 2.6cqw solid transparent; border-right: 2.6cqw solid transparent; border-top: 2.4cqh solid #e3ded3;
+}
+.fb-cover .fb-issue {
+  position: absolute; right: 4.5cqw; top: 9cqh;
+  font-weight: 300; font-size: 1.75cqw; letter-spacing: 0.22em; text-transform: uppercase; color: #8b8a84;
+}
+.fb-cover .fb-mark { position: absolute; left: 12cqw; top: 25cqh; height: 47cqh; width: auto; }
+.fb-cover .fb-title { position: absolute; left: 36cqw; right: 6cqw; bottom: 16cqh; }
+.fb-cover .fb-title h3 {
+  margin: 0; font-family: inherit; font-weight: 300; font-size: 8.4cqw; line-height: 1.02;
+  letter-spacing: 0.01em; color: #3b3d3a;
+}
+.fb-cover .fb-title p {
+  margin: 3.2cqh 0 0; font-weight: 400; font-size: 2.1cqw; letter-spacing: 0.42em;
+  text-transform: uppercase; color: #8b8a84; display: flex; align-items: center; gap: 2cqw;
+}
+.fb-cover .fb-title p::before {
+  content: ""; width: 7cqw; height: 0.7cqh; background: linear-gradient(90deg, #cfe20f, #7ecb2b);
+}
+.fb-cover .fb-role {
+  position: absolute; left: 4.5cqw; bottom: 6cqh;
+  font-weight: 300; font-size: 1.7cqw; letter-spacing: 0.2em; text-transform: uppercase; color: #8b8a84;
+}
+.fb-end .fb-mark { position: absolute; left: 50%; top: 50%; height: 24cqh; transform: translate(-50%, -62%); }
+.fb-end .fb-name {
+  position: absolute; left: 0; right: 0; top: 66cqh; text-align: center;
+  font-weight: 300; font-size: 3.4cqw; letter-spacing: 0.24em; text-transform: uppercase; color: #3b3d3a;
+}
+.fb-end .fb-sub {
+  position: absolute; left: 0; right: 0; top: 74cqh; text-align: center;
+  font-weight: 300; font-size: 1.8cqw; letter-spacing: 0.3em; text-transform: uppercase; color: #8b8a84;
+}
+.fb-back .fb-mark { position: absolute; right: 4.5cqw; bottom: 7cqh; height: 11cqh; }
+.fb-back .fb-endrule {
+  position: absolute; left: 4.5cqw; bottom: 6cqh; height: 0.9cqh; background: #e3ded3;
+  right: calc(4.5cqw + 11cqh * 0.87 + 3cqw);
+}
+
+/* Controls */
+.flipbook-bar {
+  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.fb-btn {
+  appearance: none; font: inherit; font-family: var(--font-body, system-ui), sans-serif; font-size: 0.9rem;
+  color: var(--paper, #F1F3EF); background: transparent;
+  border: 1px solid var(--line-on-void, #2B322D); border-radius: 999px;
+  min-width: 44px; height: 44px; padding: 0 18px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+}
+.fb-btn:hover:not(:disabled) { border-color: #90BD54; }
+.fb-btn:disabled { opacity: 0.35; cursor: default; }
+.fb-btn:focus-visible { outline: 2px solid #90BD54; outline-offset: 2px; }
+.fb-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fb-counter {
+  min-width: 150px; text-align: center; font-family: var(--font-body, system-ui), sans-serif;
+  font-size: 0.85rem; letter-spacing: 0.08em; color: rgba(241, 243, 239, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+.flipbook-hint {
+  margin: 0.75rem 0 0; text-align: center; font-size: 0.8rem; color: rgba(241, 243, 239, 0.45);
+  transition: opacity 0.6s;
+}
+.flipbook-hint.is-gone { opacity: 0; }
+
+@media (max-width: 520px) {
+  .fb-btn .fb-lbl { display: none; }
+  .fb-btn { padding: 0; }
+  .fb-counter { min-width: 120px; }
+
+}
+@media (max-width: 575px) {
+  .flipbook-stage { aspect-ratio: 792 / 612; }
+}
+@media (prefers-reduced-motion: reduce) { .flipbook-hint { transition: none; } }

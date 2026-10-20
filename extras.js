@@ -198,9 +198,16 @@
     } catch (err) { /* logging must never break the page */ }
   }
 
+  // Resume clicks on the video page are logged wherever the button sits.
+  document.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("[data-video-resume]")) logEvent("resume_click");
+  });
+
   function showVideoActions(video) {
     if (actionsShown) return;
     actionsShown = true;
+    // The buttons are already on the page (under Amanda's name); don't add a second set.
+    if (document.querySelector(".video-actions")) return;
 
     var actions = document.createElement("div");
     actions.className = "video-actions";
