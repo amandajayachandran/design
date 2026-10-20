@@ -124,7 +124,7 @@
       if (i > CONTENT) return "Closing page";
       var portrait = pf.getOrientation() === "portrait";
       if (portrait || i === CONTENT) return "Page " + i + " of " + CONTENT;
-      return "Pages " + i + "–" + Math.min(i + 1, CONTENT) + " of " + CONTENT;
+      return "Pages " + i + "\u2013" + Math.min(i + 1, CONTENT) + " of " + CONTENT;
     }
     function sync() {
       var i = pf.getCurrentPageIndex();
@@ -155,21 +155,22 @@
   function load() {
     if (started) return;
     started = true;
-    setStatus("Loading samples…");
+    setStatus("Loading samples\u2026");
 
     fetch("/api/portfolio-pages", { method: "POST", credentials: "same-origin" })
       .then(function (res) {
         return res.json().catch(function () { return {}; }).then(function (data) {
           if (!res.ok || !data.pages || !data.pages.length) {
+            var code = res.status === 401 ? "session" : (data.code || ("http-" + res.status));
             throw new Error(res.status === 401
               ? "Your session expired. Refresh the page and enter the password again to view the samples."
-              : "The portfolio samples couldn’t be loaded right now. Please refresh and try again.");
+              : "The portfolio samples couldn\u2019t be loaded right now. Please refresh and try again. (code: " + code + ")");
           }
           return data.pages;
         });
       })
       .then(function (pages) {
-        if (typeof St === "undefined" || !St.PageFlip) throw new Error("The page viewer couldn’t be loaded. Please refresh and try again.");
+        if (typeof St === "undefined" || !St.PageFlip) throw new Error("The page viewer couldn\u2019t be loaded. Please refresh and try again.");
         build(pages);
       })
       .catch(function (err) { setStatus(err.message); });

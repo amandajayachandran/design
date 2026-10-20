@@ -8,9 +8,12 @@
 // video), so there is no public link to them anywhere. Each signed URL
 // expires after 10 minutes.
 //
-// Upload the images to Blob named p-01.jpg ... p-11.jpg inside a folder
-// called portfolio/pages/  (e.g. portfolio/pages/p-01.jpg).
+// Upload the images to Blob named p-01.jpg ... p-11.jpg, ideally inside a
+// folder called portfolio/pages/ (e.g. portfolio/pages/p-01.jpg). If they're
+// elsewhere in the store, they're still found by name.
 // Any number of pages works: p-01, p-02, ... are shown in number order.
+// If something fails, the page shows a short code (no-pages, list-failed,
+// sign-failed, session) so the cause is easy to pin down.
 //
 // Required environment variables (already set for the video):
 //   BLOB_READ_WRITE_TOKEN
@@ -53,7 +56,7 @@ function json(body, status = 200) {
   });
 }
 
-const PAGE_RE = /(?:^|\/)p-(\d{1,3})\.(jpe?g|png|webp)$/i;
+const PAGE_RE = /(?:^|\/)p-(\d{1,3})(?:-[A-Za-z0-9]{4,})?\.(jpe?g|png|webp)$/i;
 
 async function listAll(prefix) {
   const blobs = [];
@@ -87,12 +90,33 @@ export async function POST(request) {
   }
 
   // ---- Find the page images in the private Blob store ----
+  // Looks in portfolio/pages/ first; if nothing is there, searches the whole
+  // store for files named p-01.jpg, p-02.jpg, ... in any folder.
   const prefix = process.env.PORTFOLIO_PAGES_PREFIX || "portfolio/pages/";
-  let blobs = (await listAll(prefix)).filter((b) => PAGE_RE.test(b.pathname));
+  let blobs;
+  try {
+    blobs = (await listAll(prefix)).filter((b) => PAGE_RE.test(b.pathname));
+    if (!blobs.length) {
+      blobs = (await listAll(undefined)).filter((b) => PAGE_RE.test(b.pathname));
+    }
+  } catch (err) {
+    console.error("portfolio-pages: Blob list failed:", err);
+    return json({ error: "Could not read portfolio storage.", code: "list-failed" }, 500);
+  }
 
   if (!blobs.length) {
-    return json({ error: "No portfolio pages found.", pages: [] }, 404);
+    console.error("portfolio-pages: no files named p-01.jpg, p-02.jpg ... found in Blob storage");
+    return json({ error: "No portfolio pages found.", code: "no-pages", pages: [] }, 404);
   }
+
+  // If the same page number was uploaded twice, keep the most recent copy.
+  const byNumber = new Map();
+  for (const b of blobs) {
+    const n = Number(b.pathname.match(PAGE_RE)[1]);
+    const prev = byNumber.get(n);
+    if (!prev || new Date(b.uploadedAt) > new Date(prev.uploadedAt)) byNumber.set(n, b);
+  }
+  blobs = [...byNumber.values()];
 
   blobs.sort(
     (a, b) => Number(a.pathname.match(PAGE_RE)[1]) - Number(b.pathname.match(PAGE_RE)[1])
@@ -100,7 +124,9 @@ export async function POST(request) {
 
   const validUntil = Date.now() + 10 * 60 * 1000;
 
-  const pages = await Promise.all(
+  let pages;
+  try {
+  pages = await Promise.all(
     blobs.map(async (b) => {
       const token = await issueSignedToken({
         pathname: b.pathname,
@@ -116,6 +142,10 @@ export async function POST(request) {
       return { n: Number(b.pathname.match(PAGE_RE)[1]), url: presignedUrl };
     })
   );
+  } catch (err) {
+    console.error("portfolio-pages: signing links failed:", err);
+    return json({ error: "Could not create page links.", code: "sign-failed" }, 500);
+  }
 
   return json({ pages });
 }
