@@ -1,6 +1,7 @@
 // /mywork/flipbook.js
 //
 // "Additional Portfolio Samples" page-flip book on /mywork.
+// Opens straight to pages 1-2 (no cover), matching the latest portfolio book.
 // Nothing loads until the visitor has entered the password: when the video
 // step becomes visible, this asks /api/portfolio-pages for short-lived signed
 // links to the page images (stored privately in Vercel Blob), then builds
@@ -27,39 +28,6 @@
     if (s) s.textContent = msg;
   }
 
-  function coverPage() {
-    var p = el("div", "fb-page fb-cover");
-    p.setAttribute("data-density", "hard");
-    p.innerHTML =
-      '<div class="fb-in">' +
-      '<div class="fb-rule"></div>' +
-      '<div class="fb-issue">Selected work &middot; 2026</div>' +
-      '<img class="fb-mark" src="/images/logo-mark.png" alt="">' +
-      '<div class="fb-title"><h3>Amanda<br>Jayachandran</h3><p>Portfolio</p></div>' +
-      '<div class="fb-role">Creative Director</div>' +
-      "</div>";
-    return p;
-  }
-
-  function endPage() {
-    var p = el("div", "fb-page fb-end");
-    p.innerHTML =
-      '<div class="fb-in">' +
-      '<div class="fb-rule"></div>' +
-      '<img class="fb-mark" src="/images/logo-mark.png" alt="">' +
-      '<div class="fb-name">Amanda Jayachandran</div>' +
-      '<div class="fb-sub">Creative Director</div>' +
-      "</div>";
-    return p;
-  }
-
-  function backCover() {
-    var p = el("div", "fb-page fb-back");
-    p.setAttribute("data-density", "hard");
-    p.innerHTML = '<div class="fb-in"><div class="fb-endrule"></div><img class="fb-mark" src="/images/logo-mark.png" alt=""></div>';
-    return p;
-  }
-
   function build(pages) {
     var CONTENT = pages.length;
     wrap.innerHTML = "";
@@ -68,7 +36,6 @@
     var book = el("div", "flipbook-book");
     book.setAttribute("aria-label", "Amanda Jayachandran portfolio samples");
 
-    book.appendChild(coverPage());
     pages.forEach(function (pg, i) {
       var p = el("div", "fb-page");
       var img = document.createElement("img");
@@ -79,19 +46,17 @@
       p.appendChild(img);
       book.appendChild(p);
     });
-    book.appendChild(endPage());
-    book.appendChild(backCover());
     stage.appendChild(book);
 
     var bar = el("div", "flipbook-bar");
     bar.setAttribute("role", "group");
     bar.setAttribute("aria-label", "Page controls");
     bar.innerHTML =
-      '<button class="fb-btn" type="button" data-fb="first" aria-label="Back to cover">' +
-      '<svg viewBox="0 0 16 16"><path d="M3 3v10M13 3L7 8l6 5"/></svg><span class="fb-lbl">Cover</span></button>' +
+      '<button class="fb-btn" type="button" data-fb="first" aria-label="Back to first page">' +
+      '<svg viewBox="0 0 16 16"><path d="M3 3v10M13 3L7 8l6 5"/></svg><span class="fb-lbl">First</span></button>' +
       '<button class="fb-btn" type="button" data-fb="prev" aria-label="Previous page">' +
       '<svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg><span class="fb-lbl">Previous</span></button>' +
-      '<div class="fb-counter" aria-live="polite">Cover</div>' +
+      '<div class="fb-counter" aria-live="polite">Page 1 of ' + CONTENT + '</div>' +
       '<button class="fb-btn" type="button" data-fb="next" aria-label="Next page">' +
       '<span class="fb-lbl">Next</span><svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5"/></svg></button>';
 
@@ -107,7 +72,7 @@
     var pf = new St.PageFlip(book, {
       width: 792, height: 612, size: "stretch",
       minWidth: 260, maxWidth: 1100, minHeight: 200, maxHeight: 850,
-      showCover: true, usePortrait: true, autoSize: true,
+      showCover: false, usePortrait: true, autoSize: true,
       maxShadowOpacity: 0.45, drawShadow: true, flippingTime: 900,
       mobileScrollSupport: true, swipeDistance: 20, showPageCorners: true
     });
@@ -119,19 +84,16 @@
     var bFirst = bar.querySelector('[data-fb="first"]');
 
     function label(i) {
-      if (i <= 0) return "Cover";
-      if (i >= TOTAL - 1) return "Back cover";
-      if (i > CONTENT) return "Closing page";
-      var portrait = pf.getOrientation() === "portrait";
-      if (portrait || i === CONTENT) return "Page " + i + " of " + CONTENT;
-      return "Pages " + i + "\u2013" + Math.min(i + 1, CONTENT) + " of " + CONTENT;
+      var n = i + 1, portrait = pf.getOrientation() === "portrait";
+      if (portrait || n >= CONTENT) return "Page " + Math.min(n, CONTENT) + " of " + CONTENT;
+      return "Pages " + n + "\u2013" + (n + 1) + " of " + CONTENT;
     }
     function sync() {
       var i = pf.getCurrentPageIndex();
       counter.textContent = label(i);
       bPrev.disabled = i <= 0;
       bFirst.disabled = i <= 0;
-      bNext.disabled = i >= TOTAL - 1 || (pf.getOrientation() !== "portrait" && i >= TOTAL - 2);
+      bNext.disabled = pf.getOrientation() === "portrait" ? i >= TOTAL - 1 : i >= TOTAL - 2;
     }
     pf.on("flip", function () { sync(); hint.classList.add("is-gone"); });
     pf.on("changeOrientation", sync);
