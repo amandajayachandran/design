@@ -13,13 +13,29 @@
   <link rel="stylesheet" href="/extras.css?v=2" />
   <link rel="icon" type="image/png" href="/images/logo-mark.png" />
   <link rel="apple-touch-icon" href="/images/logo-mark.png" />
-  <link rel="stylesheet" href="/mywork/flipbook.css?v=2" />
+  <link rel="stylesheet" href="/mywork/flipbook.css?v=3" />
   <style>
-    /* Once the password is accepted, start the content near the top */
+    /* Once the password is accepted, start the content near the top.
+       (.is-viewing is set by flipbook.js; :has() covers it as well.) */
+    .mywork-body.is-viewing,
     .mywork-body:has(#step-video:not([hidden])) {
       align-items: flex-start;
-      padding-top: clamp(1.5rem, 6vh, 3.5rem);
+      padding-top: clamp(1.25rem, 4vh, 3rem);
     }
+    /* Viewing column: 800px so the featured video can be 800 x 450.
+       The password form keeps its original narrower width. */
+    .mywork-body.is-viewing .mywork-gate,
+    .mywork-body:has(#step-video:not([hidden])) .mywork-gate {
+      max-width: 800px;
+    }
+    /* Featured video: full column width, max 800px, always 16:9, never cropped */
+    #step-video .video-wrap {
+      width: 100%;
+      max-width: 800px;
+      margin-inline: auto;
+      aspect-ratio: 16 / 9;
+    }
+    #step-video .video-wrap video { object-fit: contain; }
     .mywork-step h1.mywork-title { margin: 0 0 1rem; }
     /* Buttons under the name: half size, half the space below them */
     .mywork-top-actions { margin: 0 0 1.5rem; gap: 0.5rem; }
@@ -29,9 +45,62 @@
       .mywork-top-actions .video-actions-btn { min-height: 40px; display: inline-flex; align-items: center; }
     }
     .mywork-subtitle { display: block; margin-bottom: var(--space-3); }
-    /* Space above ADDITIONAL PORTFOLIO SAMPLES: 76px -> 19px (75% less) */
     #step-video .mywork-note-small { margin-bottom: 0; }
-    .mywork-samples-title { margin-top: 19px; margin-bottom: 0; }
+
+    /* Scroll cue: quiet, centered link down to the additional samples */
+    .samples-cue {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      width: max-content;
+      max-width: 100%;
+      margin: 1rem auto 1.75rem;      /* 16px after the note, ~28px before the heading */
+      padding: 0.35rem 0.75rem;
+      text-align: center;
+      color: var(--paper, #F1F3EF);
+      text-decoration: none;
+      border-radius: var(--radius, 2px);
+    }
+    .samples-cue-label {
+      font-family: var(--font-body);
+      font-size: 0.9rem;            /* ~14.4px */
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    .samples-cue-sub {
+      font-family: var(--font-body);
+      font-size: 0.78rem;           /* ~12.5px */
+      color: rgba(241, 243, 239, 0.6);
+      text-wrap: balance;           /* even lines if it wraps on phones */
+    }
+    .samples-cue-arrow {
+      width: 18px;
+      height: 18px;
+      margin-top: 0.1rem;
+      color: #90BD54;
+      transition: transform 0.25s var(--ease, ease);
+    }
+    @media (hover: hover) {
+      .samples-cue:hover .samples-cue-label { text-decoration: underline; text-underline-offset: 3px; }
+      .samples-cue:hover .samples-cue-arrow { transform: translateY(3px); }
+    }
+    .samples-cue:focus-visible .samples-cue-arrow { transform: translateY(3px); }
+    .samples-cue:focus-visible { outline: 2px solid #90BD54; outline-offset: 4px; }
+    @media (prefers-reduced-motion: reduce) {
+      .samples-cue-arrow { transition: none; }
+      .samples-cue .samples-cue-arrow,
+      .samples-cue:hover .samples-cue-arrow,
+      .samples-cue:focus-visible .samples-cue-arrow { transform: none; }
+    }
+
+    /* Additional Portfolio Samples heading + one-line description */
+    .mywork-samples-title { margin-top: 0; margin-bottom: 0.4rem; scroll-margin-top: 1.5rem; }
+    .mywork-samples-desc {
+      margin: 0;
+      font-size: 0.9rem;
+      color: rgba(241, 243, 239, 0.6);
+    }
   </style>
 </head>
 <body class="mywork-body">
@@ -75,7 +144,7 @@
         <a class="video-actions-btn video-actions-btn--primary" href="/images/Amanda-Jayachandran-Resume.pdf" target="_blank" rel="noopener" data-video-resume>View R&eacute;sum&eacute;</a>
         <button type="button" class="video-actions-btn" data-email-modal data-subject="Following up on your portfolio">Contact Amanda</button>
       </div>
-      <p class="section-kicker section-kicker--void mywork-subtitle">PORTFOLIO HIGHLIGHT</p>
+      <h2 class="section-kicker section-kicker--void mywork-subtitle">PORTFOLIO HIGHLIGHT</h2>
       <div class="video-wrap">
         <video
           id="mywork-video"
@@ -92,7 +161,14 @@
         Refreshing or returning later will require entering the password again.
       </p>
 
-      <p class="section-kicker section-kicker--void mywork-subtitle mywork-samples-title">ADDITIONAL PORTFOLIO SAMPLES</p>
+      <a class="samples-cue" href="#additional-portfolio-samples">
+        <span class="samples-cue-label">Explore additional portfolio samples</span>
+        <span class="samples-cue-sub">Campaigns&nbsp;&middot; Websites&nbsp;&middot; Events&nbsp;&middot; Print&nbsp;&amp;&nbsp;direct&nbsp;mail&nbsp;&middot; Logos</span>
+        <svg class="samples-cue-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+      </a>
+
+      <h2 class="section-kicker section-kicker--void mywork-subtitle mywork-samples-title" id="additional-portfolio-samples">ADDITIONAL PORTFOLIO SAMPLES</h2>
+      <p class="mywork-samples-desc">Selected brand campaigns, websites, event experiences, print and direct-mail projects, and logo design.</p>
       <div class="flipbook-wrap" id="flipbook-wrap">
         <p class="flipbook-status" role="status" aria-live="polite"></p>
       </div>
@@ -103,6 +179,6 @@
   <script src="/mywork/mywork.js?v=2"></script>
   <script src="/extras.js?v=2" defer></script>
   <script src="/mywork/vendor/page-flip.browser.js" defer></script>
-  <script src="/mywork/flipbook.js?v=3" defer></script>
+  <script src="/mywork/flipbook.js?v=4" defer></script>
 </body>
 </html>

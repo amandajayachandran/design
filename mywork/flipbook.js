@@ -117,6 +117,7 @@
   function load() {
     if (started) return;
     started = true;
+    document.body.classList.add("is-viewing");
     setStatus("Loading samples\u2026");
 
     fetch("/api/portfolio-pages", { method: "POST", credentials: "same-origin" })

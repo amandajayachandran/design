@@ -4,10 +4,10 @@
 
 /* Let the book use more width than the narrow video column */
 .flipbook-wrap {
-  --fb-w: min(1100px, calc(100vw - 2 * var(--space-3, 1.75rem)));
+  --fb-w: min(1280px, calc(100vw - 2 * var(--space-3, 1.75rem)));
   width: var(--fb-w);
   margin-left: calc((100% - var(--fb-w)) / 2);
-  margin-top: var(--space-2, 1rem);
+  margin-top: 1.25rem;
   margin-bottom: var(--space-4, 3rem);
 }
 
