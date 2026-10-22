@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- Just the letter J from Playfair Display, for Amanda's name -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400&text=J&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/mywork/mywork.css" />
   <link rel="stylesheet" href="/extras.css?v=2" />
@@ -22,23 +24,50 @@
       align-items: flex-start;
       padding-top: clamp(1.25rem, 4vh, 3rem);
     }
-    /* Viewing column: 800px so the featured video can be 800 x 450.
+    /* Viewing column matches the flipbook (up to 1280px).
        The password form keeps its original narrower width. */
     .mywork-body.is-viewing .mywork-gate,
     .mywork-body:has(#step-video:not([hidden])) .mywork-gate {
-      max-width: 800px;
+      max-width: 1280px;
     }
-    /* Featured video: full column width, max 800px, always 16:9, never cropped */
+    /* Hero: name, actions row, label and video share one width.
+       As wide as the flipbook, but never so tall that the video
+       (with its controls) can't fit on screen at once. */
+    .mywork-hero {
+      width: min(100%, max(calc((100vh - 13.5rem) * 16 / 9), 560px));
+      width: min(100%, max(calc((100svh - 13.5rem) * 16 / 9), 560px));
+      margin-inline: auto;
+    }
+    /* Featured video: full hero width, always 16:9, never cropped */
     #step-video .video-wrap {
       width: 100%;
-      max-width: 800px;
-      margin-inline: auto;
+      max-width: none;
       aspect-ratio: 16 / 9;
     }
     #step-video .video-wrap video { object-fit: contain; }
+    /* Name: Fraunces' display cut, so the J matches the fine strokes
+       of the other letters */
+    .mywork-step h1.mywork-title { font-variation-settings: "opsz" 144; }
+    /* Classic J (Playfair Display) in place of Fraunces' ball-ended J */
+    .mywork-step h1.mywork-title .j-classic {
+      font-family: "Playfair Display", var(--font-display, Georgia, serif);
+      font-weight: 400;
+      font-size: 1.04em;
+      font-variation-settings: normal;
+    }
     .mywork-step h1.mywork-title { margin: 0 0 1rem; }
-    /* Buttons under the name: half size, half the space below them */
-    .mywork-top-actions { margin: 0 0 1.5rem; gap: 0.5rem; }
+    /* Row under the name: buttons on the left, scroll cue on the right
+       (lined up with the video's right edge). Wraps on small screens. */
+    .mywork-hero-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.5rem;
+      margin: 0 0 1.5rem;
+    }
+    /* Buttons under the name: half size */
+    .mywork-top-actions { margin: 0; gap: 0.5rem; }
     .mywork-top-actions .video-actions-btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; line-height: 1.2; }
     /* Phones/tablets: keep them comfortably tappable */
     @media (pointer: coarse) {
@@ -47,37 +76,28 @@
     .mywork-subtitle { display: block; margin-bottom: var(--space-3); }
     #step-video .mywork-note-small { margin-bottom: 0; }
 
-    /* Scroll cue: quiet, centered link down to the additional samples */
+    /* Scroll cue: quiet link down to the additional samples */
     .samples-cue {
-      display: flex;
-      flex-direction: column;
+      display: inline-flex;
       align-items: center;
-      gap: 0.25rem;
-      width: max-content;
-      max-width: 100%;
-      margin: 1rem auto 1.75rem;      /* 16px after the note, ~28px before the heading */
-      padding: 0.35rem 0.75rem;
-      text-align: center;
+      gap: 0.4rem;
+      margin-left: auto;              /* stays right-aligned, even when wrapped */
+      padding: 0.35rem 0.25rem;
       color: var(--paper, #F1F3EF);
       text-decoration: none;
       border-radius: var(--radius, 2px);
+      white-space: nowrap;
     }
     .samples-cue-label {
       font-family: var(--font-body);
-      font-size: 0.9rem;            /* ~14.4px */
+      font-size: 0.875rem;          /* 14px */
       font-weight: 500;
       letter-spacing: 0.01em;
     }
-    .samples-cue-sub {
-      font-family: var(--font-body);
-      font-size: 0.78rem;           /* ~12.5px */
-      color: rgba(241, 243, 239, 0.6);
-      text-wrap: balance;           /* even lines if it wraps on phones */
-    }
     .samples-cue-arrow {
-      width: 18px;
-      height: 18px;
-      margin-top: 0.1rem;
+      flex-shrink: 0;
+      width: 17px;
+      height: 17px;
       color: #90BD54;
       transition: transform 0.25s var(--ease, ease);
     }
@@ -86,16 +106,15 @@
       .samples-cue:hover .samples-cue-arrow { transform: translateY(3px); }
     }
     .samples-cue:focus-visible .samples-cue-arrow { transform: translateY(3px); }
-    .samples-cue:focus-visible { outline: 2px solid #90BD54; outline-offset: 4px; }
+    .samples-cue:focus-visible { outline: 2px solid #90BD54; outline-offset: 3px; }
     @media (prefers-reduced-motion: reduce) {
-      .samples-cue-arrow { transition: none; }
       .samples-cue .samples-cue-arrow,
       .samples-cue:hover .samples-cue-arrow,
-      .samples-cue:focus-visible .samples-cue-arrow { transform: none; }
+      .samples-cue:focus-visible .samples-cue-arrow { transform: none; transition: none; }
     }
 
     /* Additional Portfolio Samples heading + one-line description */
-    .mywork-samples-title { margin-top: 0; margin-bottom: 0.4rem; scroll-margin-top: 1.5rem; }
+    .mywork-samples-title { margin-top: 2rem; margin-bottom: 0.4rem; scroll-margin-top: 1.5rem; }
     .mywork-samples-desc {
       margin: 0;
       font-size: 0.9rem;
@@ -139,10 +158,17 @@
     </section>
 
     <section class="mywork-step" data-step="video" id="step-video" hidden>
-      <h1 class="mywork-title">Amanda Jayachandran</h1>
-      <div class="video-actions is-visible mywork-top-actions">
-        <a class="video-actions-btn video-actions-btn--primary" href="/images/Amanda-Jayachandran-Resume.pdf" target="_blank" rel="noopener" data-video-resume>View R&eacute;sum&eacute;</a>
-        <button type="button" class="video-actions-btn" data-email-modal data-subject="Following up on your portfolio">Contact Amanda</button>
+      <div class="mywork-hero">
+      <h1 class="mywork-title">Amanda <span class="j-classic">J</span>ayachandran</h1>
+      <div class="mywork-hero-bar">
+        <div class="video-actions is-visible mywork-top-actions">
+          <a class="video-actions-btn video-actions-btn--primary" href="/images/Amanda-Jayachandran-Resume.pdf" target="_blank" rel="noopener" data-video-resume>View R&eacute;sum&eacute;</a>
+          <button type="button" class="video-actions-btn" data-email-modal data-subject="Following up on your portfolio">Contact Amanda</button>
+        </div>
+        <a class="samples-cue" href="#additional-portfolio-samples">
+          <span class="samples-cue-label">Explore additional portfolio samples</span>
+          <svg class="samples-cue-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+        </a>
       </div>
       <h2 class="section-kicker section-kicker--void mywork-subtitle">PORTFOLIO HIGHLIGHT</h2>
       <div class="video-wrap">
@@ -160,12 +186,7 @@
         This view is logged and tied to your email.<br />
         Refreshing or returning later will require entering the password again.
       </p>
-
-      <a class="samples-cue" href="#additional-portfolio-samples">
-        <span class="samples-cue-label">Explore additional portfolio samples</span>
-        <span class="samples-cue-sub">Campaigns&nbsp;&middot; Websites&nbsp;&middot; Events&nbsp;&middot; Print&nbsp;&amp;&nbsp;direct&nbsp;mail&nbsp;&middot; Logos</span>
-        <svg class="samples-cue-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
-      </a>
+      </div>
 
       <h2 class="section-kicker section-kicker--void mywork-subtitle mywork-samples-title" id="additional-portfolio-samples">ADDITIONAL PORTFOLIO SAMPLES</h2>
       <p class="mywork-samples-desc">Selected brand campaigns, websites, event experiences, print and direct-mail projects, and logo design.</p>
