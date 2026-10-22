@@ -34,8 +34,8 @@
        As wide as the flipbook, but never so tall that the video
        (with its controls) can't fit on screen at once. */
     .mywork-hero {
-      width: min(100%, max(calc((100vh - 13.5rem) * 16 / 9), 560px));
-      width: min(100%, max(calc((100svh - 13.5rem) * 16 / 9), 560px));
+      width: min(100%, max(calc((100vh - 9.5rem) * 16 / 9), 560px));
+      width: min(100%, max(calc((100svh - 9.5rem) * 16 / 9), 560px));
       margin-inline: auto;
     }
     /* Featured video: full hero width, always 16:9, never cropped */
@@ -55,16 +55,15 @@
       font-size: 1.04em;
       font-variation-settings: normal;
     }
-    .mywork-step h1.mywork-title { margin: 0 0 1rem; }
+    .mywork-step h1.mywork-title { margin: 0; line-height: 1.1; }
     /* Row under the name: buttons on the left, scroll cue on the right
        (lined up with the video's right edge). Wraps on small screens. */
     .mywork-hero-bar {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       flex-wrap: wrap;
-      gap: 0.75rem 1.5rem;
-      margin: 0 0 1.5rem;
+      gap: 0.75rem 1.75rem;
+      margin: 0 0 1.25rem;
     }
     /* Buttons under the name: half size */
     .mywork-top-actions { margin: 0; gap: 0.5rem; }
@@ -106,6 +105,7 @@
       .samples-cue:hover .samples-cue-arrow { transform: translateY(3px); }
     }
     .samples-cue:focus-visible .samples-cue-arrow { transform: translateY(3px); }
+    @media (max-width: 400px) { .samples-cue { white-space: normal; text-align: right; } }
     .samples-cue:focus-visible { outline: 2px solid #90BD54; outline-offset: 3px; }
     @media (prefers-reduced-motion: reduce) {
       .samples-cue .samples-cue-arrow,
@@ -159,8 +159,8 @@
 
     <section class="mywork-step" data-step="video" id="step-video" hidden>
       <div class="mywork-hero">
-      <h1 class="mywork-title">Amanda <span class="j-classic">J</span>ayachandran</h1>
       <div class="mywork-hero-bar">
+        <h1 class="mywork-title">Amanda <span class="j-classic">J</span>ayachandran</h1>
         <div class="video-actions is-visible mywork-top-actions">
           <a class="video-actions-btn video-actions-btn--primary" href="/images/Amanda-Jayachandran-Resume.pdf" target="_blank" rel="noopener" data-video-resume>View R&eacute;sum&eacute;</a>
           <button type="button" class="video-actions-btn" data-email-modal data-subject="Following up on your portfolio">Contact Amanda</button>
@@ -183,8 +183,7 @@
         <div class="video-watermark" id="video-watermark" aria-hidden="true"></div>
       </div>
       <p class="mywork-copy mywork-note-small">
-        This view is logged and tied to your email.<br />
-        Refreshing or returning later will require entering the password again.
+        This view is logged and tied to your email. Refreshing or returning later will require entering the password again.
       </p>
       </div>
 
